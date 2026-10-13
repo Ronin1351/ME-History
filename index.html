@@ -1,0 +1,648 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Middle East Regime Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: control-room atlas — hex tile map + year dial on top, detail panel beside, regional strips and per-state swimlanes below */
+:root{
+  --bg:#e8ebec; --surface:#f5f6f6; --ink:#192026; --muted:#5a666f; --line:#c6ced3; --accent:#9a6a22;
+  --east:#b3263c; --west:#2a5fbf; --neutral:#7d878e;
+  /* one lean scale, used everywhere a color appears: n = East, p = West */
+  --ln2:#b3263c; --ln1:#e99aa5; --l0:#b4bbc0; --lp1:#9dbbee; --lp2:#2a5fbf;
+  --kn2:#ffffff; --kn1:#2a1015; --k0:#1d2328; --kp1:#0f1d33; --kp2:#ffffff;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11161a; --surface:#192127; --ink:#e3e8ea; --muted:#8e9aa3; --line:#2b353c; --accent:#d9a54a;
+  --east:#e86576; --west:#6a9ef0; --neutral:#7d878e;
+  --ln2:#c4314a; --ln1:#7a3a45; --l0:#4a535a; --lp1:#34557f; --lp2:#3a74d8;
+  --kn2:#ffffff; --kn1:#fbe3e7; --k0:#eef1f3; --kp1:#e3edfc; --kp2:#ffffff; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#11161a; --surface:#192127; --ink:#e3e8ea; --muted:#8e9aa3; --line:#2b353c; --accent:#d9a54a;
+  --east:#e86576; --west:#6a9ef0; --neutral:#7d878e;
+  --ln2:#c4314a; --ln1:#7a3a45; --l0:#4a535a; --lp1:#34557f; --lp2:#3a74d8;
+  --kn2:#ffffff; --kn1:#fbe3e7; --k0:#eef1f3; --kp1:#e3edfc; --kp2:#ffffff; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 48px;display:grid;gap:22px}
+header h1{font-family:var(--f-display);font-weight:800;font-size:clamp(28px,4.4vw,46px);line-height:1.02;margin:0;letter-spacing:-.02em;text-wrap:balance}
+header p{margin:8px 0 0;color:var(--muted);max-width:68ch}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.stage{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:860px){.stage{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;min-width:0}
+.maphead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.yearbig{font-family:var(--f-display);font-weight:800;font-size:clamp(52px,9vw,96px);line-height:.85;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.event{font-size:13.5px;color:var(--muted);max-width:40ch;text-align:right}
+.event b{color:var(--ink);font-weight:600}
+#map{width:100%;height:auto;display:block;margin-top:6px}
+.hex{cursor:pointer;outline:none}
+.hex path.shape{stroke:var(--bg);stroke-width:3;transition:fill .45s ease}
+.hex.sel path.shape{stroke:var(--ink);stroke-width:3.5}
+.hex:focus-visible path.shape{stroke:var(--accent);stroke-width:4}
+.hex text{font-family:var(--f-body);pointer-events:none}
+.hex .nm{font-size:11.5px;font-weight:600}
+.hex .tag{font-family:var(--f-mono);font-size:8.5px;letter-spacing:.04em}
+.hex .ico{transition:color .45s}
+.ico-s{width:16px;height:16px;flex:none;color:var(--ink)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:10px}
+button,select{font:500 13px var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:7px 12px;cursor:pointer}
+button:hover,select:hover{border-color:var(--accent)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#play{background:var(--ink);color:var(--bg);border-color:var(--ink);min-width:86px;font-weight:600}
+.slider{flex:1 1 260px;display:flex;align-items:center;gap:8px;min-width:0}
+.slider span{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
+.eras{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.eras button{font-family:var(--f-mono);font-size:12px;padding:4px 9px}
+.eras button.on{border-color:var(--accent);color:var(--accent)}
+.stats{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:grid;gap:8px}
+.stats-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.tog{font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center;cursor:pointer}
+.tog input{accent-color:var(--accent)}
+.statbar{display:flex;height:26px;border-radius:3px;overflow:hidden;background:var(--bg)}
+.statbar i{display:block;height:100%;transition:width .4s ease;min-width:0}
+.statgrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+@media (max-width:520px){.statgrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.statgrid div{display:grid;gap:1px;padding:6px 8px;border-radius:3px;background:var(--bg);border-top:4px solid}
+.statgrid .pct{font-family:var(--f-display);font-weight:700;font-size:22px;line-height:1;font-variant-numeric:tabular-nums}
+.statgrid .lbl{font-size:11.5px;color:var(--muted);line-height:1.25}
+.statgrid .cnt{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.statsum{font-size:13.5px}
+.statsum b{font-variant-numeric:tabular-nums}
+.typegrid{display:grid;gap:3px}
+.trow{display:grid;grid-template-columns:18px minmax(0,190px) minmax(40px,1fr) 44px 46px;gap:8px;align-items:center;font-size:12.5px}
+.trow .ico-s{color:var(--muted)}
+.trow .track{height:10px;background:var(--bg);border-radius:2px;overflow:hidden}
+.trow .fill{height:100%;background:var(--ink);opacity:.7;transition:width .4s ease}
+.trow .tp{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;font-weight:500}
+.trow .tc{font-family:var(--f-mono);font-size:11px;color:var(--muted);text-align:right}
+.trow.zero{opacity:.4}
+.trow.top .tn{font-weight:700}
+@media (max-width:520px){.trow{grid-template-columns:18px minmax(0,1fr) 60px 40px 0;}.trow .tc{display:none}}
+@media (prefers-reduced-motion: reduce){.statbar i,.trow .fill{transition:none}}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:6px 14px;font-size:13px;margin-top:14px}
+.legend div{display:flex;gap:8px;align-items:center}
+.sw{width:14px;height:14px;border-radius:2px;flex:none}
+.leanlegend{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted);margin-top:10px;flex-wrap:wrap}
+.leanbar{display:flex;height:10px;width:200px;border-radius:2px;overflow:hidden}
+.leanbar i{flex:1}
+/* detail */
+.detail h2{font-family:var(--f-display);font-weight:700;font-size:28px;margin:2px 0 4px;letter-spacing:-.01em}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 10px}
+.chip{font:500 12px var(--f-mono);padding:3px 8px;border-radius:3px;border:1px solid var(--line)}
+.note{margin:0 0 14px;max-width:62ch}
+.periods{list-style:none;margin:0;padding:0;display:grid;gap:2px;max-height:360px;overflow:auto;border-top:1px solid var(--line)}
+.periods li{display:grid;grid-template-columns:86px 16px minmax(0,1fr);gap:8px;align-items:start;padding:7px 4px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px}
+.periods li:hover{background:var(--bg)}
+.periods li.cur{background:var(--bg);box-shadow:inset 3px 0 0 var(--accent)}
+.periods .yr{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.periods .sw{width:12px;height:12px;margin-top:3px}
+.periods .ty{font-weight:600}
+.periods .ln{font-family:var(--f-mono);font-size:11px}
+.sect h3{font-family:var(--f-display);font-weight:700;font-size:20px;margin:0 0 2px}
+.sect p{margin:0 0 10px;color:var(--muted);font-size:13.5px;max-width:72ch}
+.scroll{overflow-x:auto}
+svg text{fill:var(--ink)}
+.axis text{fill:var(--muted);font-family:var(--f-mono);font-size:11px}
+.axis line{stroke:var(--line)}
+.cursor{stroke:var(--accent);stroke-width:2}
+.lane-label{font-family:var(--f-body);font-size:12px;cursor:pointer}
+.lane-label.sel{font-weight:700;fill:var(--accent)}
+.clickzone{cursor:crosshair}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12.5px;padding:7px 10px;border-radius:4px;max-width:280px;z-index:9;line-height:1.4}
+.method{font-size:13px;color:var(--muted);max-width:80ch}
+.method b{color:var(--ink)}
+@media (prefers-reduced-motion: reduce){.hex path.shape,.hex .ico{transition:none}}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-IP" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V11a8 8 0 0 1 16 0v10M8.5 21v-8a3.5 3.5 0 0 1 7 0v8M2 21h20"/></symbol>
+    <symbol id="i-CO" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22V3"/><path d="M5 4h14l-3.5 4L19 12H5z" fill="currentColor"/></symbol>
+    <symbol id="i-AM" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17 4.5 6.5 9 11l3-6.5 3 6.5 4.5-4.5L21 17z" fill="currentColor"/><path d="M3 21h18"/></symbol>
+    <symbol id="i-CM" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12 5.5 4l3.5 3.5L12 2.5l3 5L18.5 4l1 8z"/><path d="M4 16h16v6H4zM8 19h8"/></symbol>
+    <symbol id="i-MR" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M12 2.5l2.9 6.4 6.9.7-5.2 4.6 1.5 6.8L12 17.5 5.9 21l1.5-6.8-5.2-4.6 6.9-.7z" fill="currentColor"/></symbol>
+    <symbol id="i-TH" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5.5 21v-6.5a6.5 6.5 0 0 1 13 0V21M12 8V3.5M10.2 4.6 12 3l1.8 1.6"/><path d="M10 21v-4a2 2 0 0 1 4 0v4"/></symbol>
+    <symbol id="i-DR" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18v10H3z"/><path d="M8.5 11V3h7v8M9 16h6"/></symbol>
+    <symbol id="i-TR" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 2.5h13M5.5 21.5h13M7.5 2.5 12 12l-4.5 9.5M16.5 2.5 12 12l4.5 9.5"/><path d="M9.5 19.5h5L12 15z" fill="currentColor"/></symbol>
+    <symbol id="i-CW" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 3.5 16 16M20.5 3.5 8 16M13 19l6-6M5 13l6 6M17.5 17.5l3 3M6.5 17.5l-3 3"/></symbol>
+    <pattern id="hatch-na" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="6" height="6" style="fill:var(--surface)"/><rect width="1.2" height="6" style="fill:var(--line)"/>
+    </pattern>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">1876 – 2026 · 19 states · year by year</div>
+    <h1>Middle East Regime Atlas</h1>
+    <p>How each state was governed and which great-power camp it leaned toward, from the Ottoman constitution to the 2026 Iran war. Color shows East–West alignment on one five-step scale; the icon shows the form of government. Press play, drag the year, or click a state.</p>
+  </header>
+
+  <div class="stage">
+    <div class="panel">
+      <div class="maphead">
+        <div class="yearbig" id="yearbig">1958</div>
+        <div class="event" id="event"></div>
+      </div>
+      <svg id="map" role="group" aria-label="Hex tile map of Middle East states"></svg>
+      <div class="controls">
+        <button id="play" type="button">▶ Play</button>
+        <div class="slider"><span>1876</span><input id="year" type="range" min="1876" max="2026" step="1" value="1958" aria-label="Year"><span>2026</span></div>
+        <select id="speed" aria-label="Playback speed">
+          <option value="440">0.5×</option><option value="220" selected>1×</option><option value="110">2×</option><option value="55">4×</option>
+        </select>
+      </div>
+      <div class="eras" id="eras"></div>
+      <div class="stats" aria-live="polite">
+        <div class="stats-head"><span class="eyebrow" id="stat-title">Alignment share</span>
+          <label class="tog"><input type="checkbox" id="indep"> Independent states only</label></div>
+        <div class="statbar" id="statbar"></div>
+        <div class="statgrid" id="statgrid"></div>
+        <div class="statsum" id="statsum"></div>
+      </div>
+      <div class="stats" aria-live="polite">
+        <div class="stats-head"><span class="eyebrow" id="tstat-title">Government share</span></div>
+        <div class="typegrid" id="typegrid"></div>
+        <div class="statsum" id="tstatsum"></div>
+      </div>
+      <div class="legend" id="legend"></div>
+      <div class="leanlegend">
+        <span>East</span>
+        <span class="leanbar"><i style="background:var(--ln2)"></i><i style="background:var(--ln1)"></i><i style="background:var(--l0)"></i><i style="background:var(--lp1)"></i><i style="background:var(--lp2)"></i></span>
+        <span>West</span>
+        <span>· East = Russia / USSR, later the Russia–China–Iran camp. West = Britain & France, later the US / NATO.</span>
+      </div>
+    </div>
+
+    <div class="panel detail" id="detail" aria-live="polite"></div>
+  </div>
+
+  <div class="panel sect">
+    <h3>Regional alignment, year by year</h3>
+    <p>Average lean of all states existing that year (−2 strong East … +2 strong West). Click anywhere to jump.</p>
+    <div class="scroll"><svg id="leanchart" viewBox="0 0 1000 170" width="100%" style="min-width:620px"></svg></div>
+  </div>
+
+  <div class="panel sect">
+    <h3>Share of states in each camp</h3>
+    <p id="share-desc">Percentage of territories on the map in each alignment step, every year. Follows the "Independent states only" switch above. Click to jump.</p>
+    <div class="scroll"><svg id="sharechart" viewBox="0 0 1000 200" width="100%" style="min-width:620px"></svg></div>
+  </div>
+
+  <div class="panel sect">
+    <h3>Share of states by form of government</h3>
+    <p id="type-desc"></p>
+    <div class="scroll"><svg id="typechart" viewBox="0 0 1000 200" width="100%" style="min-width:620px"></svg></div>
+  </div>
+
+  <div class="panel sect">
+    <h3>Every state, every year</h3>
+    <p>Each row is a state. The thick band is the form of government; the thin strip beneath it is the alignment. Click a name to inspect it, or a point on the timeline to jump.</p>
+    <div class="scroll"><svg id="lanes" width="100%" style="min-width:760px"></svg></div>
+  </div>
+
+  <p class="method"><b>Method.</b> Classifications are judgment calls compressed to whole years; real transitions are messier. "Imperial province" marks Ottoman-ruled land with no state of its own. Leans before 1917 measure Britain/France versus Russia; the Ottoman Empire in WWI fought both camps and is marked neutral with a Central Powers tag. Yemen is split North/South until unification in 1990. Pakistan before 1947 shows the British Indian provinces that became it; Afghanistan 1879–1919 is marked as a protectorate because Britain ran its foreign policy. Events after mid-2026 (the course of the Iran war, Syria's constitution, Gaza governance) are still moving.</p>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+const TYPES={
+  IP:{n:"Imperial province (Ottoman)"},
+  CO:{n:"Colonial / mandate / occupied"},
+  AM:{n:"Absolute monarchy"},
+  CM:{n:"Constitutional monarchy"},
+  MR:{n:"Military / one-party rule"},
+  TH:{n:"Theocratic republic"},
+  DR:{n:"Competitive republic"},
+  TR:{n:"Transitional authority"},
+  CW:{n:"Civil war / split control"},
+  NA:{n:"Not a separate state"}
+};
+const LEAN={"-2":"Strong East","-1":"East-leaning","0":"Non-aligned / split","1":"West-leaning","2":"Strong West"};
+const lk=l=>l<0?"n"+(-l):l>0?"p"+l:"0";
+function leanFill(l){return `var(--l${lk(l)})`}
+function leanInk(l){return `var(--k${lk(l)})`}
+function leanColor(l){return l<0?"var(--east)":l>0?"var(--west)":"var(--neutral)"}
+function icon(t,cls="ico-s"){return t==="NA"?`<span class="${cls}"></span>`:`<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-${t}"/></svg>`}
+
+const C=[
+{id:"TUR",name:"Turkey",col:2,row:0,label:y=>y<1923?"Ottoman":"Turkey",full:y=>y<1923?"Ottoman Empire":"Turkey",p:[
+[1876,"CM",1,"Sultan Abdul Hamid II grants the first Ottoman constitution and parliament. Britain props the empire up against Russia."],
+[1878,"AM",1,"Abdul Hamid II suspends parliament after the Russo-Turkish War and rules as an absolute monarch."],
+[1890,"AM",0,"After Britain occupies Egypt (1882), the Porte drifts toward Germany: officers, loans, the Baghdad Railway."],
+[1908,"CM",0,"Young Turk Revolution restores the constitution and parliament."],
+[1913,"MR",0,"Committee of Union and Progress coup; rule by the Enver–Talat–Cemal triumvirate."],
+[1914,"MR",0,"Enters WWI with Germany against Britain, France and Russia, so it opposes both camps on this scale.","Central Powers"],
+[1919,"CW",-1,"Allied occupation of Istanbul and the War of Independence. The Ankara government is armed partly by Soviet Russia."],
+[1923,"MR",0,"Republic of Turkey. Kemalist one-party state under the CHP; cautious neutrality, including through most of WWII."],
+[1946,"DR",1,"First multi-party elections. The Truman Doctrine (1947) ties Turkey to the US against Soviet pressure."],
+[1950,"DR",2,"Democrat Party wins power; troops to Korea; joins NATO in 1952."],
+[1960,"MR",2,"Military coup; PM Menderes is executed."],
+[1961,"DR",2,"Civilian rule restored under a new constitution."],
+[1980,"MR",2,"Military coup and martial law."],
+[1983,"DR",2,"Elections resume; Özal era; a firm NATO member."],
+[2016,"DR",1,"Failed coup and mass purges; executive presidency (2017); buys Russian S-400s. Elections stay competitive but tilted; Istanbul mayor İmamoğlu jailed in 2025."]]},
+{id:"IRN",name:"Iran",col:4,row:1,p:[
+[1876,"AM",0,"Qajar shahs rule absolutely, squeezed between British India and the Russian Empire."],
+[1906,"CM",0,"Constitutional Revolution creates an elected Majlis."],
+[1907,"CM",0,"Anglo-Russian Convention splits Iran into a Russian north and British south.","Split spheres"],
+[1911,"AM",-1,"A Russian ultimatum shuts the Majlis and Russian troops hold the north. Several armies occupy Iran in WWI."],
+[1921,"MR",1,"Reza Khan seizes power in a British-backed coup."],
+[1925,"AM",0,"Reza Shah founds the Pahlavi dynasty and courts Germany in the 1930s to offset Britain and the USSR."],
+[1941,"CO",0,"Anglo-Soviet invasion. Reza Shah is forced out and his son installed under joint occupation.","Joint occupation"],
+[1946,"CM",1,"Soviet troops leave Azerbaijan under US pressure; parliamentary politics revive."],
+[1951,"CM",0,"PM Mossadegh nationalizes British-owned oil."],
+[1953,"AM",2,"US/UK-backed coup removes Mossadegh. The Shah rules as a key US ally (Baghdad Pact/CENTO, 1955)."],
+[1979,"TH",0,"Islamic Revolution. Khomeini's line is \"Neither East nor West\": hostile to both superpowers."],
+[1990,"TH",-1,"Postwar rebuilding leans on Russian arms and nuclear help and on Chinese trade."],
+[2022,"TH",-2,"Supplies drones to Russia for the Ukraine war; joins the SCO (2023) and BRICS (2024)."],
+[2025,"TH",-2,"Twelve-day war with Israel and the US (June) hits nuclear sites; Russia and China offer statements, not help. Mass protests from December."],
+[2026,"TH",-2,"US–Israeli strikes from 28 Feb kill Supreme Leader Ali Khamenei; Mojtaba Khamenei is named successor on 8 Mar. The Islamic Republic survives while ceasefires come and go."]]},
+{id:"AFG",name:"Afghanistan",col:5,row:1,label:()=>"Afghan.",p:[
+[1876,"AM",0,"Emirate under Sher Ali Khan: the buffer state in the Great Game between Russia and British India."],
+[1879,"CO",2,"Second Anglo-Afghan War; the Treaty of Gandamak hands Britain control of Afghan foreign policy.","British-run"],
+[1919,"AM",-1,"Third Anglo-Afghan War wins full independence under Amanullah; first state to recognize Soviet Russia (friendship treaty 1921)."],
+[1929,"CW",0,"Revolt topples Amanullah; Habibullah Kalakani briefly holds Kabul."],
+[1930,"AM",0,"Nadir Shah, then Zahir Shah (1933); neutral in WWII."],
+[1955,"AM",-1,"Pashtunistan dispute with US-allied Pakistan; turns to Soviet aid and arms."],
+[1964,"CM",-1,"New constitution and an elected parliament under Zahir Shah's \"New Democracy\"."],
+[1973,"MR",-1,"Daoud's coup ends the monarchy; one-man republic."],
+[1978,"MR",-2,"Saur Revolution brings the communist PDPA to power."],
+[1979,"CW",-2,"Soviet invasion. The Kabul regime is Soviet-propped; mujahideen are backed by the US, Pakistan and Saudi Arabia.","Soviet occupation"],
+[1992,"CW",0,"Najibullah falls; mujahideen factions fight over Kabul."],
+[1996,"TH",0,"Taliban Islamic Emirate takes Kabul; recognized only by Pakistan, Saudi Arabia and the UAE."],
+[2001,"CO",2,"US-led invasion after 9/11 topples the Taliban."],
+[2004,"DR",2,"Islamic Republic with elected presidents (Karzai, Ghani) under NATO protection; elections marred by fraud."],
+[2021,"TH",-1,"Taliban retake Kabul as US forces leave. China and Russia engage; Russia formally recognizes the Emirate in July 2025."],
+[2026,"TH",-1,"Open war with Pakistan from late Feb 2026: Pakistani airstrikes on Kabul and Kandahar, border fighting; China mediates. No lasting ceasefire.","War w/ Pakistan"]]},
+{id:"PAK",name:"Pakistan",col:6,row:2,full:y=>y<1947?"British India (Pakistan areas)":"Pakistan",label:y=>y<1947?"Br. India":"Pakistan",p:[
+[1876,"CO",2,"Part of British India: Punjab, Sindh, the North-West Frontier and Baluchistan."],
+[1947,"DR",1,"Partition and independence as a dominion; first war with India over Kashmir."],
+[1954,"DR",2,"Joins SEATO (1954) and the Baghdad Pact/CENTO (1955); US arms flow in."],
+[1958,"MR",2,"Ayub Khan's military regime; U-2 spy flights from Peshawar."],
+[1965,"MR",1,"US arms embargo after the war with India; partnership with China (then Moscow's rival) begins."],
+[1971,"DR",0,"East Pakistan breaks away as Bangladesh. Bhutto's elected government quits SEATO and courts the non-aligned world."],
+[1977,"MR",2,"Zia ul-Haq's coup; frontline US ally funneling arms to the Afghan mujahideen."],
+[1988,"DR",1,"Elections return (Bhutto, Sharif); US sanctions over the nuclear program from 1990."],
+[1999,"MR",1,"Musharraf's coup."],
+[2001,"MR",2,"Major US ally in the war on terror after 9/11."],
+[2008,"DR",1,"Elected civilian governments, with the army dominant behind the scenes."],
+[2015,"DR",0,"China–Pakistan Economic Corridor; China becomes the main arms and investment partner as US ties cool."],
+[2025,"MR",0,"Military-dominated hybrid rule: Imran Khan jailed, Field Marshal Asim Munir's powers entrenched by the 27th Amendment. Balances China with renewed US ties after the May 2025 clash with India; open war with the Taliban from Feb 2026.","Hybrid regime"]]},
+{id:"IRQ",name:"Iraq",col:3,row:1,p:[
+[1876,"IP",0,"Ottoman provinces of Baghdad, Basra and Mosul."],
+[1917,"CO",2,"British forces take Baghdad; League of Nations mandate from 1920."],
+[1921,"CO",2,"Faisal I crowned king under the British Mandate."],
+[1932,"CM",2,"Independent kingdom, but British bases and oil interests remain. A pro-Axis coup in 1941 is crushed by British troops."],
+[1955,"CM",2,"Anchors the Western-backed Baghdad Pact."],
+[1958,"MR",-1,"The 14 July Revolution kills the royal family. Qasim's republic leaves the Baghdad Pact and works with communists and Moscow."],
+[1963,"MR",0,"Ba'athist coup, then rule by the Arif brothers."],
+[1968,"MR",-1,"The Ba'ath Party seizes power."],
+[1972,"MR",-2,"Friendship treaty with the USSR; oil nationalized."],
+[1979,"MR",-1,"Saddam Hussein takes full control."],
+[1980,"MR",0,"Iran–Iraq War: Soviet arms plus US, Western and Gulf support against Iran."],
+[1990,"MR",-1,"Invades Kuwait, is crushed by a US-led coalition, and lives under sanctions. Moscow stays a soft diplomatic friend."],
+[2003,"CO",2,"US-led invasion topples Saddam; Coalition Provisional Authority."],
+[2005,"DR",1,"New constitution and elections amid sectarian civil war."],
+[2011,"DR",0,"US troops leave; Baghdad balances Washington and Tehran."],
+[2014,"DR",0,"ISIS seizes a third of Iraq; the US-led coalition and Iran-backed militias both fight it. Elections continue (latest Nov 2025)."]]},
+{id:"SYR",name:"Syria",col:2,row:1,p:[
+[1876,"IP",0,"Ottoman provinces of Damascus and Aleppo."],
+[1918,"CM",0,"Faisal's short-lived Arab Kingdom of Syria."],
+[1920,"CO",2,"French Mandate after the Battle of Maysalun."],
+[1946,"DR",1,"Independence as a parliamentary republic."],
+[1949,"MR",0,"Three military coups in one year."],
+[1954,"DR",0,"Civilian rule restored; neutralist foreign policy."],
+[1956,"DR",-1,"Soviet arms deals and a rising Ba'athist and Communist left."],
+[1958,"MR",-1,"Merges with Nasser's Egypt as the United Arab Republic."],
+[1961,"MR",0,"Secedes from the UAR."],
+[1963,"MR",-1,"Ba'ath Party coup."],
+[1970,"MR",-2,"Hafez al-Assad takes power; Syria becomes Moscow's closest Arab ally (treaty 1980)."],
+[1990,"MR",0,"With the USSR collapsing, Assad joins the US-led coalition against Iraq."],
+[2000,"MR",-1,"Bashar al-Assad inherits power; the alliance with Iran and Russia deepens."],
+[2011,"CW",-2,"Uprising turns to civil war. Iran, Hezbollah and Russia (from 2015) keep Assad in power."],
+[2024,"TR",0,"Assad falls (Dec 2024). HTS-led interim government under Ahmed al-Sharaa."],
+[2025,"TR",1,"US and EU lift most sanctions; al-Sharaa visits the White House. Pivot to Turkey, the Gulf and the West while still negotiating with Moscow over its bases. Indirect assembly elections; a constitution is promised."]]},
+{id:"LBN",name:"Lebanon",col:1,row:1,p:[
+[1876,"IP",1,"Mount Lebanon: an autonomous Ottoman district guaranteed by European powers, France foremost."],
+[1920,"CO",2,"French Mandate creates Greater Lebanon."],
+[1943,"DR",1,"Independence; confessional power-sharing republic."],
+[1958,"DR",2,"US Marines land under the Eisenhower Doctrine."],
+[1975,"CW",0,"Civil war, with Syrian (1976) and Israeli (1982) interventions."],
+[1990,"DR",-1,"The Taif Agreement ends the war; Syrian military tutelage follows."],
+[2005,"DR",0,"The Cedar Revolution forces Syrian troops out; Hezbollah becomes the strongest armed force."],
+[2025,"DR",1,"Hezbollah badly weakened by the 2024 war. President Joseph Aoun and PM Nawaf Salam push a state monopoly on arms with US and Saudi backing."]]},
+{id:"ISR",name:"Israel",col:1,row:2,p:[
+[1876,"NA",0,"Part of Ottoman, then British Mandate Palestine (see Palestine)."],
+[1948,"DR",0,"Independence as a parliamentary democracy. Early non-alignment; the first arms come via Soviet-bloc Czechoslovakia."],
+[1956,"DR",1,"Joins Britain and France in the Suez war; France is the main arms supplier."],
+[1967,"DR",2,"Six-Day War; the US becomes the main patron."],
+[2023,"DR",2,"Judicial-overhaul crisis, the 7 Oct attack and multi-front wars. Fights Iran alongside the US in 2025–26."]]},
+{id:"PSE",name:"Palestine",col:2,row:2,p:[
+[1876,"IP",0,"Ottoman districts of Jerusalem, Nablus and Acre."],
+[1917,"CO",2,"British conquest and the Balfour Declaration; British Mandate from 1920."],
+[1948,"CO",0,"The Nakba. The West Bank is annexed by Jordan; Gaza is run by Egypt."],
+[1964,"CO",-1,"The PLO is founded, later backed by the USSR and Arab states."],
+[1967,"CO",-1,"Israeli occupation of the West Bank and Gaza."],
+[1994,"TR",1,"The Oslo Accords create the Palestinian Authority, funded by the US and EU."],
+[2007,"CW",0,"Split rule: Hamas in Gaza, Fatah's PA in the West Bank."],
+[2023,"CW",0,"Hamas attack on Israel (7 Oct) and the Gaza war."],
+[2025,"CO",0,"Gaza ceasefire (Oct 2025). A US-led plan puts Gaza under a Palestinian technocratic committee overseen by a Board of Peace; Israeli troops hold much of the Strip."]]},
+{id:"JOR",name:"Jordan",col:3,row:2,p:[
+[1876,"IP",0,"Thinly governed part of Ottoman Syria."],
+[1918,"CO",2,"Arab Revolt territory, then the Emirate of Transjordan under British Mandate (1921)."],
+[1946,"CM",2,"Independent kingdom with a British-officered Arab Legion."],
+[1957,"AM",2,"King Hussein dismisses the elected government and imposes martial law. US aid replaces British."],
+[1989,"CM",2,"Riots bring back elections and parties."],
+[1990,"CM",1,"Refuses to join the war against Iraq."],
+[1994,"CM",2,"Peace treaty with Israel; close US partner."]]},
+{id:"EGY",name:"Egypt",col:0,row:2,p:[
+[1876,"AM",1,"Khedive Isma'il, nominally Ottoman. Bankrupt finances are put under Anglo-French control."],
+[1882,"CO",2,"British occupation; formal protectorate from 1914."],
+[1922,"CM",2,"Nominal independence as a kingdom; British troops stay on the Canal."],
+[1952,"MR",0,"Free Officers coup; Nasser rises."],
+[1955,"MR",-1,"Czech (Soviet-bloc) arms deal; Egypt leads the Non-Aligned camp."],
+[1956,"MR",-2,"Suez Crisis. The USSR funds the Aswan Dam and arms the army."],
+[1972,"MR",0,"Sadat expels Soviet advisers."],
+[1974,"MR",1,"Turns to Washington after the 1973 war."],
+[1979,"MR",2,"Camp David peace with Israel; becomes the second-largest US aid recipient."],
+[2011,"TR",1,"Mubarak falls; a military council rules."],
+[2012,"DR",1,"Mohamed Morsi elected president."],
+[2013,"MR",1,"Sisi-led coup. Buys Russian and French arms but keeps US aid."]]},
+{id:"SAU",name:"Saudi Arabia",col:3,row:3,label:()=>"Saudi Ar.",full:y=>y<1932?"Nejd (Saudi state)":"Saudi Arabia",p:[
+[1876,"AM",0,"The Second Saudi State (Emirate of Nejd) in decline; the Hejaz is held by the Ottomans."],
+[1891,"AM",0,"Ottoman-aligned Rashidis take Nejd; the Saudis go into exile in Kuwait."],
+[1902,"AM",1,"Ibn Saud retakes Riyadh."],
+[1915,"AM",2,"Treaty of Darin: British protection and subsidy."],
+[1932,"AM",2,"Kingdom of Saudi Arabia proclaimed."],
+[1945,"AM",2,"The Roosevelt–Ibn Saud meeting seals an oil-for-security alliance."],
+[1973,"AM",1,"Leads the oil embargo against the US."],
+[1974,"AM",2,"Petrodollar ties restored."],
+[2020,"AM",1,"Hedging: OPEC+ with Russia, China as top oil buyer, a China-brokered deal with Iran (2023). Still the main US partner in the Gulf."]]},
+{id:"KWT",name:"Kuwait",col:4,row:2,p:[
+[1876,"IP",0,"Al Sabah sheikhdom under loose Ottoman suzerainty."],
+[1899,"CO",2,"Secret British protection treaty."],
+[1961,"CM",2,"Independence; 1962 constitution and an elected National Assembly."],
+[1963,"CM",0,"First Gulf state to open ties with the USSR; non-aligned stance."],
+[1976,"AM",0,"Parliament suspended."],
+[1981,"CM",0,"Parliament restored."],
+[1986,"AM",0,"Parliament suspended again."],
+[1990,"CO",2,"Iraqi occupation; the government in exile joins the US-led coalition."],
+[1991,"CM",2,"Liberation; parliament returns in 1992; US defense pact."],
+[2024,"AM",2,"The Emir suspends parliament and parts of the constitution (May 2024)."]]},
+{id:"BHR",name:"Bahrain",col:4,row:3,p:[
+[1876,"CO",2,"Al Khalifa sheikhdom under British protection."],
+[1971,"AM",2,"Independence; the elected assembly is dissolved in 1975. Hosts the US Fifth Fleet."],
+[2002,"CM",2,"Kingdom with an elected lower house. The 2011 uprising is crushed with Saudi troops."]]},
+{id:"QAT",name:"Qatar",col:5,row:3,p:[
+[1876,"AM",0,"Al Thani sheikhdom under nominal Ottoman suzerainty, with an Ottoman garrison until 1915."],
+[1916,"CO",2,"British protectorate."],
+[1971,"AM",2,"Independence."],
+[1995,"AM",1,"Emir Hamad launches Al Jazeera and keeps ties with Iran and Islamists while hosting the US base at Al Udeid."],
+[2022,"AM",2,"Named a major non-NATO US ally."]]},
+{id:"UAE",name:"UAE",col:6,row:3,full:y=>y<1971?"Trucial States":"United Arab Emirates",p:[
+[1876,"CO",2,"The Trucial States under British protection."],
+[1971,"AM",2,"The United Arab Emirates is founded as Britain leaves the Gulf."],
+[2019,"AM",1,"Hedges with China and Russia while signing the Abraham Accords (2020) and hosting US forces."]]},
+{id:"OMN",name:"Oman",col:6,row:4,full:y=>y<1970?"Muscat and Oman":"Oman",p:[
+[1876,"AM",2,"Sultanate of Muscat and Oman under British influence (exclusive treaty 1891)."],
+[1965,"CW",2,"Dhofar rebellion, backed by South Yemen, the USSR and China. Britain and Iran help the sultan."],
+[1970,"AM",2,"Qaboos deposes his father in a British-backed palace coup."],
+[1990,"AM",1,"Stays a Western partner but becomes the region's neutral mediator, including with Iran."]]},
+{id:"NYE",name:"Yemen",col:3,row:4,label:y=>y<1990?"N. Yemen":"Yemen",full:y=>y<1990?"North Yemen":"Yemen",p:[
+[1876,"IP",0,"Ottoman Yemen; Zaydi imams resist in the highlands."],
+[1918,"AM",0,"Mutawakkilite Kingdom under Imam Yahya; isolationist."],
+[1956,"AM",-1,"Imam Ahmad takes Soviet and Chinese arms."],
+[1962,"CW",-1,"Republican revolution and civil war. Egypt and the USSR back the republic; Saudi Arabia and Britain back the royalists."],
+[1970,"MR",0,"Yemen Arab Republic; Saudi influence grows."],
+[1978,"MR",1,"Ali Abdullah Saleh takes power with Saudi and US backing."],
+[1990,"MR",0,"Unifies with the South; backs Iraq in the Gulf War."],
+[2001,"MR",1,"Counter-terror partnership with the US."],
+[2012,"TR",1,"Saleh leaves after the Arab Spring; Hadi's transition."],
+[2015,"CW",0,"The Iran-backed Houthis take Sanaa; a Saudi-led coalition intervenes. In Jan 2026 the Saudi-backed government retakes the south from the separatist STC.","Split"]]},
+{id:"SYE",name:"South Yemen",col:4,row:4,label:()=>"S. Yemen",full:y=>y<1967?"Aden (British)":"South Yemen",p:[
+[1876,"CO",2,"British Aden colony and protectorates."],
+[1967,"MR",-2,"People's Democratic Republic of Yemen, the Arab world's only Marxist one-party state; Soviet naval access."],
+[1990,"NA",0,"Merged into unified Yemen (see Yemen)."]]}
+];
+const ORDER=["TUR","IRN","AFG","PAK","IRQ","SYR","LBN","ISR","PSE","JOR","EGY","SAU","KWT","BHR","QAT","UAE","OMN","NYE","SYE"];
+const EVENTS=[
+[1876,"Ottoman constitution proclaimed"],[1878,"Congress of Berlin"],[1882,"Britain occupies Egypt"],[1906,"Persian Constitutional Revolution"],[1908,"Young Turk Revolution"],
+[1914,"Ottomans enter WWI with Germany"],[1916,"Sykes–Picot; Arab Revolt"],[1917,"Balfour Declaration; British take Baghdad and Jerusalem"],[1920,"San Remo: British and French mandates"],
+[1923,"Republic of Turkey founded"],[1932,"Saudi kingdom proclaimed; Iraq independent"],[1941,"Anglo-Soviet invasion of Iran"],[1945,"Arab League founded"],[1947,"Partition of India; Pakistan founded"],[1948,"Israel founded; first Arab–Israeli war"],
+[1952,"Free Officers coup in Egypt"],[1953,"Coup in Iran restores the Shah"],[1955,"Baghdad Pact"],[1956,"Suez Crisis"],[1958,"Iraqi revolution; UAR; US Marines in Lebanon"],
+[1962,"North Yemen civil war"],[1967,"Six-Day War; South Yemen independent"],[1970,"Assad in Syria; Qaboos in Oman"],[1971,"Britain leaves the Gulf; UAE founded"],[1972,"Sadat expels Soviet advisers"],
+[1973,"October War and oil embargo"],[1975,"Lebanese civil war begins"],[1979,"Iranian Revolution; Egypt–Israel peace; Soviets invade Afghanistan"],[1980,"Iran–Iraq War"],[1990,"Iraq invades Kuwait; Yemen unified"],
+[1991,"Gulf War; Soviet Union collapses"],[1993,"Oslo Accords"],[2001,"9/11; US-led invasion of Afghanistan"],[2003,"US-led invasion of Iraq"],[2011,"Arab Spring"],[2014,"ISIS declares a caliphate"],
+[2015,"Russia enters Syria; Saudi-led war in Yemen; Iran nuclear deal"],[2016,"Coup attempt in Turkey"],[2020,"Abraham Accords"],[2021,"Taliban retake Kabul"],[2023,"7 Oct attack and Gaza war"],
+[2024,"Assad regime falls"],[2025,"Israel–Iran twelve-day war; Gaza ceasefire"],[2026,"US–Israeli war on Iran; Ali Khamenei killed; Pakistan–Afghanistan war"]];
+const ERAS=[1876,1914,1920,1948,1956,1979,1991,2011,2026];
+const Y0=1876,Y1=2026;
+const byId=Object.fromEntries(C.map(c=>[c.id,c]));
+
+function at(c,y){let r=c.p[0];for(const q of c.p){if(q[0]<=y)r=q;else break}return {start:r[0],type:r[1],lean:r[2],note:r[3],tag:r[4]}}
+function endOf(c,start){const i=c.p.findIndex(q=>q[0]===start);return i<c.p.length-1?c.p[i+1][0]-1:null}
+function labelOf(c,y){return c.label?c.label(y):c.name}
+function fullOf(c,y){return c.full?c.full(y):c.name}
+const NS="http://www.w3.org/2000/svg";
+function el(t,a={},p){const e=document.createElementNS(NS,t);for(const k in a){const v=a[k];if((k==="fill"||k==="stroke")&&/^(var|url)\(/.test(String(v)))e.style[k]=v;else e.setAttribute(k,v)}if(p)p.appendChild(e);return e}
+
+let year=1958,selected="IRN",timer=null;
+
+/* ---------- hex map ---------- */
+const S=50,W=Math.sqrt(3)*S;
+function hexPath(){let d="";for(let i=0;i<6;i++){const a=Math.PI/180*(60*i-90);d+=(i?"L":"M")+(S-2)*Math.cos(a)+","+(S-2)*Math.sin(a)}return d+"Z"}
+const map=document.getElementById("map");
+const xs=C.map(c=>c.col*W+(c.row%2?W/2:0)),ys=C.map(c=>c.row*1.5*S);
+map.setAttribute("viewBox",`${Math.min(...xs)-W/2-6} ${-S-6} ${Math.max(...xs)-Math.min(...xs)+W+12} ${Math.max(...ys)+2*S+12}`);
+const hexEls={};
+C.forEach((c,i)=>{
+  const g=el("g",{class:"hex",transform:`translate(${xs[i]},${ys[i]})`,tabindex:0,role:"button"},map);
+  const shape=el("path",{class:"shape",d:hexPath()},g);
+  const ico=el("use",{class:"ico",x:-12,y:-31,width:24,height:24},g);
+  const nm=el("text",{class:"nm","text-anchor":"middle",y:12},g);
+  const lt=el("text",{class:"tag","text-anchor":"middle",y:27},g);
+  g.addEventListener("click",()=>select(c.id));
+  g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();select(c.id)}});
+  g.addEventListener("mousemove",e=>showTip(e,c));g.addEventListener("mouseleave",hideTip);
+  hexEls[c.id]={g,shape,nm,ico,lt};
+});
+
+const tip=document.getElementById("tip");
+function showTip(e,c){const s=at(c,year);tip.innerHTML=`<b>${fullOf(c,year)}</b> · ${year}<br>${TYPES[s.type].n} · ${LEAN[s.lean]}`;tip.hidden=false;
+  const x=Math.min(e.clientX+14,innerWidth-290);tip.style.left=x+"px";tip.style.top=(e.clientY+14)+"px"}
+function hideTip(){tip.hidden=true}
+
+function renderMap(){
+  C.forEach(c=>{
+    const s=at(c,year),t=TYPES[s.type],h=hexEls[c.id],na=s.type==="NA";
+    const ink=na?"var(--muted)":leanInk(s.lean);
+    h.shape.style.fill=na?"url(#hatch-na)":leanFill(s.lean);
+    [h.nm,h.lt].forEach(x=>x.style.fill=ink);
+    h.ico.style.color=ink;h.ico.setAttribute("href",na?"":`#i-${s.type}`);h.ico.style.display=na?"none":"";
+    h.nm.textContent=labelOf(c,year);
+    h.lt.textContent=na?"":(s.tag?s.tag.toUpperCase():LEAN[s.lean].replace("Non-aligned / split","Non-aligned"));
+    h.g.classList.toggle("sel",c.id===selected);
+    h.g.setAttribute("aria-label",`${fullOf(c,year)}, ${year}: ${t.n}, ${LEAN[s.lean]}`);
+  });
+}
+
+/* ---------- detail ---------- */
+const detail=document.getElementById("detail");
+function renderDetail(){
+  const c=byId[selected],s=at(c,year),t=TYPES[s.type],end=endOf(c,s.start);
+  const span=`${s.start}–${end??"now"}`;
+  let html=`<div class="eyebrow">${span}</div><h2>${fullOf(c,year)}</h2>
+  <div class="chips"><span class="chip" style="display:inline-flex;gap:6px;align-items:center">${icon(s.type)}${t.n}</span>
+  ${s.type==="NA"?"":`<span class="chip" style="background:${leanFill(s.lean)};color:${leanInk(s.lean)};border-color:transparent">${LEAN[s.lean]}</span>`}${s.tag?`<span class="chip">${s.tag}</span>`:""}</div>
+  <p class="note">${s.note}</p><ul class="periods">`;
+  c.p.forEach((q,i)=>{const e=i<c.p.length-1?c.p[i+1][0]-1:"now";const T=TYPES[q[1]];
+    const lean=q[1]==="NA"?"":`<span class="ln" style="background:${leanFill(q[2])};color:${leanInk(q[2])};padding:1px 5px;border-radius:2px">${LEAN[q[2]]}</span>`;
+    html+=`<li data-y="${q[0]}" class="${q[0]===s.start?"cur":""}" tabindex="0"><span class="yr">${q[0]}–${e}</span>${icon(q[1])}<span><span class="ty">${T.n}</span> ${lean}</span></li>`});
+  detail.innerHTML=html+"</ul>";
+  detail.querySelectorAll("li").forEach(li=>{const go=()=>{stop();setYear(+li.dataset.y)};li.onclick=go;li.onkeydown=e=>{if(e.key==="Enter")go()}});
+  const cur=detail.querySelector("li.cur");if(cur){const ul=cur.parentElement;ul.scrollTop=cur.offsetTop-ul.offsetTop-60}
+}
+
+/* ---------- year aggregates ---------- */
+const YEARS=[];for(let y=Y0;y<=Y1;y++)YEARS.push(y);
+const AGG=YEARS.map(y=>{const cnt={};let sum=0,n=0;C.forEach(c=>{const s=at(c,y);cnt[s.type]=(cnt[s.type]||0)+1;if(s.type!=="NA"&&s.type!=="IP"){sum+=s.lean;n++}});return {y,cnt,avg:n?sum/n:0,n}});
+
+const X0=48,X1=990;const xOf=y=>X0+(y-Y0)/(Y1-Y0+1)*(X1-X0);const bw=(X1-X0)/(Y1-Y0+1);
+function axis(svg,yTop,yBot){const g=el("g",{class:"axis"},svg);
+  for(let y=1880;y<=2020;y+=20){el("line",{x1:xOf(y),x2:xOf(y),y1:yTop,y2:yBot,"stroke-dasharray":"2 4"},g);const t=el("text",{x:xOf(y),y:yBot+14,"text-anchor":"middle"},g);t.textContent=y}}
+function addCursor(svg,top,bot){const l=el("line",{class:"cursor",y1:top,y2:bot},svg);return l}
+function clickZone(svg,top,bot){const r=el("rect",{class:"clickzone",x:X0,y:top,width:X1-X0,height:bot-top,fill:"transparent"},svg);
+  const go=e=>{const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());stop();setYear(Math.round(Y0+(p.x-X0)/bw-.5))};
+  r.addEventListener("click",go)}
+
+const lc=document.getElementById("leanchart");
+axis(lc,10,140);
+{const g=el("g",{class:"axis"},lc);[[-2,"−2"],[0,"0"],[2,"+2"]].forEach(([v,t])=>{const yy=75-v*30;el("line",{x1:X0,x2:X1,y1:yy,y2:yy},g);const tx=el("text",{x:X0-8,y:yy+4,"text-anchor":"end"},g);tx.textContent=t})}
+AGG.forEach(a=>{const h=a.avg*30;el("rect",{x:xOf(a.y)+.5,width:Math.max(bw-1,1),y:h>0?75-h:75,height:Math.abs(h)||.5,fill:leanFill(Math.max(-2,Math.min(2,Math.round(a.avg))))},lc)});
+{const l1=el("text",{x:X1,y:22,"text-anchor":"end","font-size":11,"font-family":"var(--f-mono)"},lc);l1.textContent="WEST ↑";l1.style.fill="var(--west)";
+ const l2=el("text",{x:X1,y:136,"text-anchor":"end","font-size":11,"font-family":"var(--f-mono)"},lc);l2.textContent="EAST ↓";l2.style.fill="var(--east)"}
+const lcCur=addCursor(lc,6,142);clickZone(lc,6,142);
+
+const tc=document.getElementById("typechart");
+/* small multiples: one neutral bar row per government type, so color stays reserved for alignment */
+const TORDER=["IP","CO","AM","CM","MR","TH","TR","DR","CW"];
+const TRH=24,TTOP=4,TBOT=TTOP+TORDER.length*TRH;
+tc.setAttribute("viewBox",`0 0 1000 ${TBOT+22}`);
+let tcCur=null;
+function typeShareAt(y,indep){const cnt={};TORDER.forEach(t=>cnt[t]=0);let n=0;
+  C.forEach(c=>{const s=at(c,y);if(s.type==="NA")return;if(indep&&(s.type==="IP"||s.type==="CO"))return;cnt[s.type]++;n++});return {cnt,n}}
+function drawTypes(){
+  tc.innerHTML="";axis(tc,TTOP,TBOT);
+  const ind=document.getElementById("indep").checked,sh=YEARS.map(y=>typeShareAt(y,ind));
+  const maxS=Math.max(...sh.flatMap(s=>TORDER.map(t=>s.n?s.cnt[t]/s.n:0)));
+  TORDER.forEach((t,r)=>{const yb=TTOP+(r+1)*TRH-3;
+    const u=el("use",{href:`#i-${t}`,x:X0-26,y:yb-17,width:16,height:16},tc);u.style.color="var(--muted)";
+    const tt=el("title",{},u);tt.textContent=TYPES[t].n;
+    el("line",{x1:X0,x2:X1,y1:yb,y2:yb,stroke:"var(--line)"},tc);
+    let d="";sh.forEach((s,i)=>{const v=s.n?s.cnt[t]/s.n:0;if(!v)return;const h=v/maxS*(TRH-5);d+=`M${xOf(YEARS[i])},${yb}h${bw}v${-h}h${-bw}z`});
+    el("path",{d,fill:"var(--ink)","fill-opacity":.62},tc)});
+  document.getElementById("type-desc").textContent=`Share of ${ind?"independent states":"territories"} under each form of government, every year. Bars share one scale: the tallest equals ${Math.round(maxS*100)}%. Icons match the legend above. Click to jump.`;
+  tcCur=addCursor(tc,TTOP,TBOT);clickZone(tc,TTOP,TBOT);
+}
+
+/* ---------- alignment share: live bar + 100% stacked chart ---------- */
+const LSTEPS=[-2,-1,0,1,2];
+const indepEl=document.getElementById("indep");
+function shareAt(y,indep){const cnt={"-2":0,"-1":0,"0":0,"1":0,"2":0};let n=0;
+  C.forEach(c=>{const s=at(c,y);if(s.type==="NA")return;if(indep&&(s.type==="IP"||s.type==="CO"))return;cnt[s.lean]++;n++});return {cnt,n}}
+const sc=document.getElementById("sharechart");let scCur=null;
+function drawShare(){
+  sc.innerHTML="";axis(sc,10,170);
+  const ind=indepEl.checked,base=YEARS.map(()=>0),sh=YEARS.map(y=>shareAt(y,ind));
+  LSTEPS.forEach(l=>{let d="";sh.forEach((s,i)=>{const v=s.n?s.cnt[l]/s.n:0;if(!v)return;const y1=170-base[i]*160;d+=`M${xOf(YEARS[i])},${y1}h${bw+.4}v${-v*160}h${-(bw+.4)}z`;base[i]+=v});
+    el("path",{d,fill:leanFill(l)},sc)});
+  const g=el("g",{class:"axis"},sc);
+  [[0,"0%"],[50,"50%"],[100,"100%"]].forEach(([v,t])=>{const yy=170-v*1.6;const ln=el("line",{x1:X0,x2:X1,y1:yy,y2:yy},g);if(v===50){ln.setAttribute("stroke-dasharray","3 3");ln.style.stroke="var(--bg)"}
+    const tx=el("text",{x:X0-8,y:yy+4,"text-anchor":"end"},g);tx.textContent=t});
+  scCur=addCursor(sc,6,172);clickZone(sc,6,172);
+}
+drawShare();
+const statbar=document.getElementById("statbar"),statgrid=document.getElementById("statgrid");
+const segs={},cards={};
+LSTEPS.forEach(l=>{const i=document.createElement("i");i.style.background=leanFill(l);i.style.width="0%";statbar.appendChild(i);segs[l]=i;
+  const d=document.createElement("div");d.style.borderTopColor=leanFill(l);d.innerHTML=`<span class="pct">0%</span><span class="lbl">${LEAN[l]}</span><span class="cnt"></span>`;statgrid.appendChild(d);cards[l]=d});
+function renderStats(){
+  const ind=indepEl.checked,{cnt,n}=shareAt(year,ind),pc=v=>n?v/n*100:0;
+  LSTEPS.forEach(l=>{const p=pc(cnt[l]);segs[l].style.width=p+"%";segs[l].title=`${LEAN[l]}: ${cnt[l]} of ${n}`;
+    cards[l].querySelector(".pct").textContent=Math.round(p)+"%";cards[l].querySelector(".cnt").textContent=`${cnt[l]} of ${n}`});
+  const E=cnt[-2]+cnt[-1],Z=cnt[0],W=cnt[1]+cnt[2];
+  document.getElementById("stat-title").textContent=`Alignment share · ${year} · ${n} ${ind?"independent states":"territories"}`;
+  const lead=W===E?"East and West are even":W>E?`West leads by ${Math.round(pc(W-E))} pts`:`East leads by ${Math.round(pc(E-W))} pts`;
+  document.getElementById("statsum").innerHTML=`<b style="color:var(--east)">East ${Math.round(pc(E))}%</b> (${E}) · <b>Non-aligned ${Math.round(pc(Z))}%</b> (${Z}) · <b style="color:var(--west)">West ${Math.round(pc(W))}%</b> (${W}) — ${lead}`;
+}
+drawTypes();
+const typegrid=document.getElementById("typegrid"),trows={};
+TORDER.forEach(t=>{const d=document.createElement("div");d.className="trow";
+  d.innerHTML=`${icon(t)}<span class="tn">${TYPES[t].n}</span><span class="track"><span class="fill" style="display:block;width:0%"></span></span><span class="tp">0%</span><span class="tc"></span>`;
+  typegrid.appendChild(d);trows[t]=d});
+const TGROUPS=[["Monarchy",["AM","CM"]],["Military / one-party",["MR"]],["Theocracy",["TH"]],["Competitive republic",["DR"]],["Foreign rule",["IP","CO"]],["War or transition",["CW","TR"]]];
+function renderTypeStats(){
+  const ind=indepEl.checked,{cnt,n}=typeShareAt(year,ind),pc=v=>n?v/n*100:0;
+  const top=Math.max(...TORDER.map(t=>cnt[t]));
+  TORDER.forEach(t=>{const r=trows[t],p=pc(cnt[t]);r.querySelector(".fill").style.width=p+"%";r.querySelector(".tp").textContent=Math.round(p)+"%";
+    r.querySelector(".tc").textContent=`${cnt[t]}/${n}`;r.classList.toggle("zero",!cnt[t]);r.classList.toggle("top",cnt[t]>0&&cnt[t]===top)});
+  document.getElementById("tstat-title").textContent=`Government share · ${year} · ${n} ${ind?"independent states":"territories"}`;
+  document.getElementById("tstatsum").innerHTML=TGROUPS.map(([g,ts])=>{const v=ts.reduce((a,t)=>a+cnt[t],0);return v?`<b>${g} ${Math.round(pc(v))}%</b>`:null}).filter(Boolean).join(" · ");
+}
+indepEl.addEventListener("change",()=>{drawShare();drawTypes();setYear(year)});
+
+/* ---------- swimlanes ---------- */
+const lanes=document.getElementById("lanes");const RH=24,LX0=128;
+const lx=y=>LX0+(y-Y0)/(Y1-Y0+1)*(X1-LX0);const lbw=(X1-LX0)/(Y1-Y0+1);
+lanes.setAttribute("viewBox",`0 0 1000 ${ORDER.length*RH+30}`);
+{const g=el("g",{class:"axis"},lanes);for(let y=1880;y<=2020;y+=20){el("line",{x1:lx(y),x2:lx(y),y1:0,y2:ORDER.length*RH,"stroke-dasharray":"2 4"},g);const t=el("text",{x:lx(y),y:ORDER.length*RH+16,"text-anchor":"middle"},g);t.textContent=y}}
+const laneLabels={};
+ORDER.forEach((id,r)=>{const c=byId[id],y0=r*RH+3;
+  const t=el("text",{class:"lane-label",x:LX0-8,y:y0+12,"text-anchor":"end",tabindex:0},lanes);t.textContent=c.name;
+  t.addEventListener("click",()=>select(id));t.addEventListener("keydown",e=>{if(e.key==="Enter")select(id)});laneLabels[id]=t;
+  c.p.forEach((q,i)=>{const s=q[0],e=i<c.p.length-1?c.p[i+1][0]:Y1+1;const T=TYPES[q[1]],na=q[1]==="NA",w=(e-s)*lbw;
+    const rc=el("rect",{x:lx(s)+.5,width:Math.max(w-1,1),y:y0,height:18,fill:na?"url(#hatch-na)":leanFill(q[2])},lanes);
+    const tt=el("title",{},rc);tt.textContent=`${c.name} ${s}–${e-1}: ${T.n}${na?"":", "+LEAN[q[2]]}`;
+    if(!na&&w>=15){const u=el("use",{href:`#i-${q[1]}`,x:lx(s)+2,y:y0+2,width:14,height:14},lanes);u.style.color=leanInk(q[2]);u.style.pointerEvents="none"}
+  });
+});
+const lnCur=el("line",{class:"cursor",y1:0,y2:ORDER.length*RH},lanes);
+{const r=el("rect",{class:"clickzone",x:LX0,y:0,width:X1-LX0,height:ORDER.length*RH,fill:"transparent"},lanes);
+ r.addEventListener("click",e=>{const pt=lanes.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform(lanes.getScreenCTM().inverse());stop();setYear(Math.round(Y0+(p.x-LX0)/lbw-.5));
+   const row=Math.floor(p.y/RH);if(ORDER[row])select(ORDER[row])})}
+
+/* ---------- legend, eras ---------- */
+document.getElementById("legend").innerHTML=Object.entries(TYPES).map(([k,t])=>k==="NA"?`<div><span class="sw" style="background:var(--surface);border:1px dashed var(--muted)"></span>${t.n}</div>`:`<div>${icon(k)}${t.n}</div>`).join("");
+const erasEl=document.getElementById("eras");
+erasEl.innerHTML=ERAS.map(y=>`<button type="button" data-y="${y}">${y}</button>`).join("");
+erasEl.querySelectorAll("button").forEach(b=>b.onclick=()=>{stop();setYear(+b.dataset.y)});
+
+/* ---------- state ---------- */
+const slider=document.getElementById("year"),yearbig=document.getElementById("yearbig"),eventEl=document.getElementById("event");
+function setYear(y){
+  year=Math.max(Y0,Math.min(Y1,y));slider.value=year;yearbig.textContent=year;
+  let ev=null;for(const e of EVENTS){if(e[0]<=year)ev=e;else break}
+  eventEl.innerHTML=ev?(ev[0]===year?`<b>${ev[1]}</b>`:`Last turning point · ${ev[0]}<br><b>${ev[1]}</b>`):"";
+  erasEl.querySelectorAll("button").forEach(b=>b.classList.toggle("on",+b.dataset.y===year));
+  const cx=xOf(year)+bw/2;[lcCur,tcCur,scCur].forEach(l=>{l.setAttribute("x1",cx);l.setAttribute("x2",cx)});
+  const lcx=lx(year)+lbw/2;lnCur.setAttribute("x1",lcx);lnCur.setAttribute("x2",lcx);
+  renderMap();renderDetail();renderStats();renderTypeStats();
+}
+function select(id){selected=id;Object.entries(laneLabels).forEach(([k,t])=>t.classList.toggle("sel",k===id));renderMap();renderDetail()}
+const playBtn=document.getElementById("play"),speed=document.getElementById("speed");
+function start(){if(year>=Y1)setYear(Y0);playBtn.textContent="❚❚ Pause";
+  const tick=()=>{if(year>=Y1){stop();return}setYear(year+1);timer=setTimeout(tick,+speed.value)};timer=setTimeout(tick,+speed.value)}
+function stop(){clearTimeout(timer);timer=null;playBtn.textContent="▶ Play"}
+playBtn.onclick=()=>timer?stop():start();
+slider.oninput=()=>{stop();setYear(+slider.value)};
+document.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT"||e.target.tagName==="SELECT"||e.target.closest?.(".hex,li,.lane-label,button"))return;
+  if(e.key===" "){e.preventDefault();timer?stop():start()}else if(e.key==="ArrowRight"){stop();setYear(year+1)}else if(e.key==="ArrowLeft"){stop();setYear(year-1)}});
+select(selected);setYear(year);
+</script>
+
+</body></html>
