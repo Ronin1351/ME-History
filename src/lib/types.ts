@@ -67,7 +67,7 @@ export function alignmentText(record: RecordTuple): string {
 }
 
 export function alignmentColor(record: RecordTuple): string {
-  if (poleOf(record)) return record[2] === -2 ? '#a259e6' : '#cf9cf0'
+  if (poleOf(record)) return record[2] === -2 ? '#b14cff' : '#e0a3ff'
   return COLORS[record[2] + 2] ?? '#304151'
 }
 

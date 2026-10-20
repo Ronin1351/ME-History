@@ -31,6 +31,6 @@ describe('historical parity calculations', () => {
 
   it('preserves alignment color semantics, including China as a third pole', () => {
     expect(alignmentColor([1979, 'MR', -2, ''])).toBe('#f2545b')
-    expect(alignmentColor([1979, 'MR', -2, '', '', 'CN'])).toBe('#a259e6')
+    expect(alignmentColor([1979, 'MR', -2, '', '', 'CN'])).toBe('#b14cff')
   })
 })
