@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LEVANT • Milestone 16 · Compact One-Row Navigation</title><style>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LEVANT · History, governments & alignment</title><style>
 :root{--bg:#060d18;--panel:#101d2e;--line:#273b51;--text:#edf6ff;--muted:#9eb4c9;--gold:#eab968;--east2:#d84f63;--east1:#eab0b7;--neutral:#7a899a;--west1:#9abce8;--west2:#326bcf}
 *{box-sizing:border-box}body{margin:0;color:var(--text);background:radial-gradient(ellipse at 20% -30%,#203a59,transparent 65%),var(--bg);font:14px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}header{display:flex;align-items:end;justify-content:space-between;gap:15px;flex-wrap:wrap;margin-bottom:18px}h1{font-size:clamp(30px,3vw,48px);margin:3px 0;letter-spacing:-.05em}h2{font-size:19px;margin:0 0 8px}.kicker{color:var(--gold);font-weight:800;letter-spacing:.2em;text-transform:uppercase;font-size:11px}.muted{color:var(--muted)}#app{max-width:1740px;margin:auto;padding:20px}.deck{display:grid;grid-template-columns:minmax(0,2.4fr) minmax(300px,1fr);gap:16px}.panel{border:1px solid var(--line);border-radius:16px;background:#101c2bdc;overflow:hidden;box-shadow:0 15px 50px #0003}.toolbar{padding:15px 17px;display:grid;gap:10px}.actions,.legend{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.year{color:#f6cf87;font-size:35px;font-weight:850;line-height:1}input[type=range]{width:100%;accent-color:#eab968}button,select{border:1px solid #42617d;border-radius:9px;background:#1a2c43;color:var(--text);font:inherit;padding:7px 10px;cursor:pointer}button:hover{border-color:#eab968}button:focus-visible,select:focus-visible,input:focus-visible,.area:focus-visible{outline:3px solid #f6d293;outline-offset:2px}button.active{background:#eab968;color:#172334}.mapFrame{padding:8px 14px 12px;position:relative;background:#071320}#atlas{width:100%;height:auto;display:block;background:radial-gradient(circle at 40% 40%,#172c41 0%,#0c1b2c 70%);border:1px solid #2b4056;border-radius:10px}#atlas .context{fill:#243445;stroke:#0a1626;stroke-width:1.5}#atlas .area{stroke:#07111d;stroke-width:1.65;cursor:pointer;transition:fill .25s}#atlas .area.sel{stroke:#ffdd91;stroke-width:4}#atlas .area:hover{stroke:#fff;stroke-width:3}#atlas .label{fill:#f5f9ff;font-size:12px;font-weight:800;text-anchor:middle;paint-order:stroke;stroke:#071321;stroke-width:3px;pointer-events:none}#atlas .symbol{fill:#071321;stroke:#fff;stroke-width:1.5;pointer-events:none}#atlas .symtext{fill:#fff;font-size:9px;text-anchor:middle;font-weight:800;pointer-events:none}#atlas .guide{stroke:#7891a7;stroke-width:1.1;fill:none;stroke-dasharray:3 3}#atlas .eventline{fill:none;stroke:#f9d279;stroke-width:2.6;stroke-dasharray:8 4;pointer-events:none}#atlas .eventdot{fill:#f9d279;stroke:#101d2e;stroke-width:1.5;pointer-events:none}.legend{padding:10px 16px;border-top:1px solid var(--line);font-size:12px}.key{display:flex;align-items:center;gap:6px}.sw{display:block;width:14px;height:14px;border-radius:4px;border:1px solid #ffffff45}.right{display:flex;flex-direction:column;gap:16px}.pad{padding:17px}.chips{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}.chip{border:1px solid #40607c;background:#0b1929;border-radius:8px;padding:5px 8px;font-size:11px}.desc{line-height:1.65;color:#c6d7e4}.stat{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat>div{background:#0b1a29;border-radius:9px;padding:10px}.stat b{font-size:17px;display:block}.stat small{color:#9eb4c9}.eventitem{padding:10px 0;border-bottom:1px solid var(--line);font-size:12px}.eventitem button{border:0;padding:0;background:none;color:#eac079;text-align:left}.list{max-height:240px;overflow:auto}.tiny{font-size:11px;color:#9cb0c3;line-height:1.6}.timeline{display:flex;gap:1px;height:33px;border-radius:7px;overflow:hidden;background:#223648;margin-top:10px}.seg{border:0;border-radius:0;min-width:1px;padding:0;position:relative}.seg.current{outline:2px solid white;outline-offset:-2px}.regions{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:10px}.regions button{font-size:12px;text-align:left}.regions button.on{border-color:#eab968}.mono{font-variant-numeric:tabular-nums}.warn{background:#31271b;border:1px solid #715535;padding:11px;border-radius:9px;color:#f1d3a9}.keyline{display:inline-block;width:26px;border-top:3px dashed #eab968;margin-inline:4px}.empty{color:#9cb0c3;font-size:12px}.toggle{display:inline-flex;align-items:center;gap:5px}.titleline{padding:14px 18px 0}.hover{position:absolute;z-index:3;display:none;pointer-events:none;background:#05101bef;border:1px solid #58708c;border-radius:9px;padding:9px 11px;max-width:240px;font-size:12px}.badge{background:#1c3043;border-radius:20px;padding:7px 12px;font-size:12px;color:#c5d8e5}@media(max-width:1100px){.deck{grid-template-columns:1fr}.right{display:grid;grid-template-columns:1fr 1fr}}@media(max-width:700px){#app{padding:10px}.right{grid-template-columns:1fr}.regions{grid-template-columns:repeat(2,1fr)}#atlas .label{font-size:15px}.year{font-size:28px}}
 
@@ -130,6 +130,22 @@ body{background:
 .ux-apidetails .apihealth{display:block}
 @media(max-width:880px){.ux-bar>.ux-tabs{order:3;flex-basis:100%}.ux-api{margin-left:auto}}
 @media(min-width:881px){.ux-field{min-width:172px}.ux-field select{max-width:205px}}
+/* M17: audit fixes — undo M15/M16 rules that crushed or hid content */
+.right>*{flex-shrink:0} /* sidebar cards keep their height; .right scrolls instead */
+.right>.ux-provenance{display:block!important;font-size:11px;color:#a9bdcf;line-height:1.55} /* map-source and classification caveats, moved out of the fixed-height map panel */
+.ux-scale-def{display:block;margin-top:6px;color:#c9d9e6}
+.legend.ux-legend-off .key{opacity:.35}
+.right>.breakdowns .methodtxt{display:block;font-size:11px;color:#a9bdcf;line-height:1.55}
+#econScaleNote{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:11px;color:#a9bdcf;margin-top:6px;cursor:help}
+.ux-data-controls:has(#econScale[style*="none"]){display:none} /* nothing to show in alignment mode */
+.ux-data-controls .econcontrols{display:none} /* duplicate of the top-bar Map layer + Reload */
+.ux-data-controls .econbox{grid-template-columns:minmax(220px,320px) minmax(0,1fr);align-items:center} /* scale | note */
+.ux-data-controls #econScaleNote{margin-top:0}
+.ux-data-controls #econScale[style*="none"]{display:none!important} /* hide hatch key in alignment mode */
+.ux-apidetails .apihelp{display:block;font-size:11px;color:#a9bdcf}
+.ux-apidetails[open]{box-shadow:0 0 0 100vmax rgba(2,8,15,.62),0 24px 100px #000c}
+.ux-year{display:flex;align-items:center;gap:6px}.ux-year[hidden]{display:none}.ux-year button{padding:6px 10px;border-radius:9px}.ux-year input{width:170px;margin:0}.ux-year b{font-size:18px;color:#f5cd84;min-width:46px;font-variant-numeric:tabular-nums}
+@media(max-width:760px){.toolbar>.actions:first-child{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.toolbar>.actions:first-child #headline{order:9;flex-basis:100%}.ux-year{flex-basis:100%}.ux-year input{flex:1;width:auto}}
 </style></head><body><div id="app"><header><div><div class="kicker">LEVANT / Middle East Futures Lab / Geographic reconstruction</div><h1>History, governments & alignment.</h1><div class="muted">Actual Natural Earth country outlines. Consistent political-alignment colors, government symbols, and dated regional links.</div></div><div class="badge">Embedded boundaries · economic layers need internet</div></header><div class="deck"><section class="panel"><div class="toolbar"><div class="actions"><div class="year mono" id="yr">1979</div><div class="muted" id="headline" style="flex:1">Historical map</div><button id="prev" aria-label="Previous year">←</button><button id="play">▶ Play</button><button id="next" aria-label="Next year">→</button><select id="speed"><option value="420">Normal</option><option value="150">Fast</option></select></div><input id="slider" type="range" min="1876" max="2026" value="1979" aria-label="Historical year"><div class="actions"><button data-year="1914">1914</button><button data-year="1948">1948</button><button data-year="1956">1956</button><button data-year="1979">1979</button><button data-year="1991">1991</button><button data-year="2011">2011</button><button data-year="2025">2025</button><label class="toggle"><input type="checkbox" id="links" checked> Historical relationship events</label><label class="toggle"><input type="checkbox" id="icons" checked> Government icons</label></div></div><div class="mapFrame"><svg id="atlas" viewBox="0 0 1120 690" role="group" aria-label="Actual country shapes across Middle East, shaded by historical East West alignment"><g id="context"></g><g id="countries"></g><g id="events"></g><g id="labels"></g></svg><div class="hover" id="hover"></div></div><div class="legend" id="legend"></div><div class="breakdowns" aria-live="polite">
 <section class="breakdown"><div class="trendhead"><h3>Alignment share</h3><span class="badge" id="alignYear">1979</span></div><div class="caption">Grouped by East, neutral/mixed and West. Based on territory counts, not population.</div><div id="factionStack" class="pctstack" aria-label="Alignment share"></div><div id="factionRows"></div></section>
 <section class="breakdown"><div class="trendhead"><h3>Government systems</h3><span class="badge" id="govYear">1979</span></div><div class="caption">Government type percentages for the selected year.</div><div id="govStack" class="pctstack" aria-label="Government breakdown"></div><div id="govRows"></div></section>
@@ -148,24 +164,24 @@ body{background:
 <div id="economicStatus" class="econstat" role="status">Historical political classifications are shown. Economic layers load from the World Bank when available.</div>
 <div id="wbReport" class="econstat wbreport" aria-live="polite"></div>
 <div id="econScale" style="display:none"><div id="econGradient" class="econscale"></div><div class="econendpoints"><span id="econMin"></span><span id="econMax"></span></div><div class="econkey"><span></span>No observation for selected year</div></div>
-<div class="econstat">Economic layers use the exact selected year; values are not carried forward or invented. Color ranges stay fixed across all years. GDP: $1 billion–$3 trillion (logarithmic). Growth: −15% to +15%, centered on zero. Unemployment: 0%–30%. Values outside these display ranges are clipped to the end color, never changed in the table. Hover or select a country for its value. Dates before available coverage show missing data.</div>
+<div class="econstat" id="econScaleNote">Economic layers use the exact selected year; values are not carried forward or invented. Color ranges stay fixed across all years. GDP: $1 billion–$3 trillion (logarithmic). Growth: −15% to +15%, centered on zero. Unemployment: 0%–30%. Values outside these display ranges are clipped to the end color, never changed in the table. Hover or select a country for its value. Dates before available coverage show missing data.</div>
 </section>
 <div class="pad tiny">Geography: Natural Earth low-resolution country boundaries (modern generalized shapes). Not historical-border reconstruction. Classification: supplied historical atlas, provisional and awaiting source-level verification. This map does not claim political alignment is a measurable law of nature. Small states use leader labels rather than enlarged fake shapes. South Yemen appears as a historical record, not a fabricated modern polygon.</div></section><div class="right"><section class="panel pad"><div class="kicker">Territory inspection</div><h2 id="selectedName">Iran</h2><div class="chips" id="chips"></div><div id="selectedEconomic" class="econstat" style="margin:8px 0"></div><p class="desc" id="description"></p><div class="stat"><div><small>Political system</small><b id="government"></b></div><div><small>Alignment</small><b id="alignment"></b></div></div><h2 style="margin-top:20px">Selected territory timeline</h2><div class="timeline" id="timeline"></div><p class="tiny">Click any segment to jump to that period.</p></section><section class="panel pad"><h2>Recorded relationship events</h2><p class="tiny">Links appear only on their recorded event year; they are not continuous quantified influence measurements.</p><div id="relationship" class="list"></div></section><section class="panel pad"><h2>Inspect a country or territory</h2><div id="regions" class="regions"></div><p class="tiny">Bahrain and South Yemen cannot be separately represented as polygons at this resolution. Historical coverage uses markers and the country inspection panel.</p></section><section class="panel pad"><h2>What this does not measure</h2><div class="warn tiny">A “hardcore versus moderate religion” score is not included: the current dataset does not support a defensible country-year measure. The map shows government categories, including explicitly theocratic regimes, but religion and political system are not interchangeable. Neighborhood relationships are evidenced event markers, not modeled causal effects.</div></section></div></div></div>
 <section class="changeLab" id="structuralLab">
- <div class="labHead"><div><div class="badge" style="display:inline-block;margin-bottom:8px">Milestone 9 · Observed data and backtesting</div><h2>Structural Change Laboratory</h2><p class="muted" style="margin:7px 0 0">Historical signals, measured changes, and honest one-year forecasting tests</p></div><span class="badge" id="labCoverage">Waiting for World Bank observations</span></div>
+ <div class="labHead"><div><h2>Structural Change Laboratory</h2><p class="muted" style="margin:7px 0 0">Historical signals, measured changes, and honest one-year forecasting tests</p></div><span class="badge" id="labCoverage">Waiting for World Bank observations</span></div>
  <div class="labBody">
   <div class="labChoices"><label>Economic indicator<select id="labMetric"><option value="growth">Real GDP growth (percentage points)</option><option value="unemployment">Unemployment (percentage points)</option></select></label><label>Country<select id="labCountry"></select></label><label>Comparison window<select id="labWindow"><option value="3">3 years</option><option value="5" selected>5 years</option><option value="10">10 years</option></select></label><button type="button" id="labMapToggle" style="background:#193c49;color:#b5f0e7;border:1px solid #447f7c;border-radius:8px;padding:11px">Color map by change: OFF</button></div>
-  <div class="labCards"><div class="labCard"><span>Selected-year observation</span><b id="labObserved">—</b><span id="labObservedFoot">No data</span></div><div class="labCard"><span>Change vs. selected window</span><b id="labDelta">—</b><span id="labDeltaFoot">Exact-year observations required</span></div><div class="labCard"><span>Most recent test MAE</span><b id="labMae">—</b><span id="labMaeFoot">Out-of-sample, one-year-ahead</span></div></div>
+  <div class="labCards"><div class="labCard"><span>Selected-year observation</span><b id="labObserved">—</b><span id="labObservedFoot">No data</span></div><div class="labCard"><span>Change vs. selected window</span><b id="labDelta">—</b><span id="labDeltaFoot">Exact-year observations required</span></div><div class="labCard"><span>Backtest error (persistence model, avg.)</span><b id="labMae">—</b><span id="labMaeFoot">Out-of-sample, one-year-ahead</span></div></div>
   <div id="labMessage" class="labMsg">Load World Bank observations to calculate change signals.</div>
   <div><h3>Selected country's observations and historical one-year predictions</h3><svg id="labChart" class="labChart" viewBox="0 0 850 245" role="img" aria-label="Historical observed data and backtest predictions"></svg><p class="labFoot">Solid teal: published observations. Dashed orange: baseline predictions made with earlier observations only. Gaps are not filled.</p></div>
   <div><h3>Countries ranked by absolute observed change, not by political performance</h3><div class="labScroll"><table class="labTable"><thead><tr><th>Country</th><th>Selected year</th><th>Earlier year</th><th>Change</th></tr></thead><tbody id="labRows"></tbody></table></div></div>
-  <p class="labFoot">Method: change = value in selected year minus value in selected year minus N. A comparison is omitted if either exact-year observation is missing. Backtest evaluates a persistence forecast (next year equals last year's observation) against a trailing 5-observation mean. Both use only earlier years and are evaluated on years 2005–2025 with complete observations. MAE = mean absolute error, in percentage points. No political causation, probability, or ten-year predictive validity is inferred.</p>
+  <p class="labFoot">Method: change = value in selected year minus value in selected year minus N. A comparison is omitted if either exact-year observation is missing. Backtest evaluates a persistence forecast (next year equals last year's observation) against a trailing 5-observation mean. Both use only earlier years and are evaluated over the same 30-year window shown in the chart (ending at the selected year), on years with complete observations. MAE = mean absolute error, in percentage points. No political causation, probability, or ten-year predictive validity is inferred.</p>
  </div>
 </section>
 
 
 <section class="eventlab" id="eventStudy">
- <div class="labHead"><div><div class="badge" style="display:inline-block;margin-bottom:8px">Milestone 10 · Event context + economic observations</div><h2>Regional Event Study</h2><p class="muted">Compare recorded economic data surrounding dated political events. Side-by-side association, not causal inference.</p></div><span class="badge" id="evStatus">Data-dependent</span></div>
+ <div class="labHead"><div><h2>Regional Event Study</h2><p class="muted">Compare recorded economic data surrounding dated political events. Side-by-side association, not causal inference.</p></div><span class="badge" id="evStatus">Data-dependent</span></div>
  <div class="labBody">
   <div class="evgrid"><label>Recorded historical milestone<select id="evEvent"></select></label><label>Economic indicator<select id="evMetric"><option value="growth">Real GDP growth (%)</option><option value="unemployment">Unemployment (%)</option><option value="gdp">GDP (current US$)</option></select></label><label>Comparison country<select id="evCompare"></select></label><label>Chart window<select id="evWindow"><option value="3">±3 years</option><option value="5" selected>±5 years</option><option value="10">±10 years</option></select></label></div>
   <div class="evwarn" id="evDescription"></div>
@@ -177,7 +193,7 @@ body{background:
 </section>
 
 <section class="eventlab" id="spilloverLab">
- <div class="labHead spillhead"><div><div class="badge" style="display:inline-block;margin-bottom:8px">Milestone 11 · Neighbor economies</div><h2>Regional Spillover Observatory</h2><p class="muted">For a selected historical event, compare observed economic changes across neighboring and directly involved regional countries.</p></div><span class="badge" id="spillStatus">Awaiting data</span></div>
+ <div class="labHead spillhead"><div><h2>Regional Spillover Observatory</h2><p class="muted">For a selected historical event, compare observed economic changes across neighboring and directly involved regional countries.</p></div><span class="badge" id="spillStatus">Awaiting data</span></div>
  <div class="labBody">
   <div class="spill-controls">
    <label>Historical event<select id="spillEvent"></select></label>
@@ -214,7 +230,7 @@ body{background:
 [1923,"MR",0,"Republic of Turkey. Kemalist one-party state under the CHP; cautious neutrality, including through most of WWII."],
 [1946,"DR",1,"First multi-party elections. The Truman Doctrine (1947) ties Turkey to the US against Soviet pressure."],
 [1950,"DR",2,"Democrat Party wins power; troops to Korea; joins NATO in 1952."],
-[1960,"MR",2,"Military coup; PM Menderes is executed."],
+[1960,"MR",2,"Military coup; PM Menderes is tried and executed (1961)."],
 [1961,"DR",2,"Civilian rule restored under a new constitution."],
 [1980,"MR",2,"Military coup and martial law."],
 [1983,"DR",2,"Elections resume; Özal era; a firm NATO member."],
@@ -285,7 +301,7 @@ body{background:
 [2014,"DR",0,"ISIS seizes a third of Iraq; the US-led coalition and Iran-backed militias both fight it. Elections continue (latest Nov 2025)."]]},
 {id:"SYR",name:"Syria",col:2,row:1,p:[
 [1876,"IP",0,"Ottoman provinces of Damascus and Aleppo."],
-[1918,"CM",0,"Faisal's short-lived Arab Kingdom of Syria."],
+[1918,"CM",0,"Faisal's Arab government in Damascus; proclaimed the Arab Kingdom of Syria in March 1920."],
 [1920,"CO",2,"French Mandate after the Battle of Maysalun."],
 [1946,"DR",1,"Independence as a parliamentary republic."],
 [1949,"MR",0,"Three military coups in one year."],
@@ -339,7 +355,7 @@ body{background:
 [1922,"CM",2,"Nominal independence as a kingdom; British troops stay on the Canal."],
 [1952,"MR",0,"Free Officers coup; Nasser rises."],
 [1955,"MR",-1,"Czech (Soviet-bloc) arms deal; Egypt leads the Non-Aligned camp."],
-[1956,"MR",-2,"Suez Crisis. The USSR funds the Aswan Dam and arms the army."],
+[1956,"MR",-2,"Suez Crisis. The USSR arms the army and agrees to fund the Aswan High Dam (1958)."],
 [1972,"MR",0,"Sadat expels Soviet advisers."],
 [1974,"MR",1,"Turns to Washington after the 1973 war."],
 [1979,"MR",2,"Camp David peace with Israel; becomes the second-largest US aid recipient."],
@@ -357,7 +373,7 @@ body{background:
 [1974,"AM",2,"Petrodollar ties restored."],
 [2020,"AM",1,"Hedging: OPEC+ with Russia, China as top oil buyer, a China-brokered deal with Iran (2023). Still the main US partner in the Gulf."]]},
 {id:"KWT",name:"Kuwait",col:4,row:2,p:[
-[1876,"IP",0,"Al Sabah sheikhdom under loose Ottoman suzerainty."],
+[1876,"AM",0,"Al Sabah sheikhdom under loose Ottoman suzerainty."],
 [1899,"CO",2,"Secret British protection treaty."],
 [1961,"CM",2,"Independence; 1962 constitution and an elected National Assembly."],
 [1963,"CM",0,"First Gulf state to open ties with the USSR; non-aligned stance."],
@@ -365,11 +381,12 @@ body{background:
 [1981,"CM",0,"Parliament restored."],
 [1986,"AM",0,"Parliament suspended again."],
 [1990,"CO",2,"Iraqi occupation; the government in exile joins the US-led coalition."],
-[1991,"CM",2,"Liberation; parliament returns in 1992; US defense pact."],
+[1991,"AM",2,"Liberation; US defense pact. Parliament stays suspended until the October 1992 elections."],
+[1992,"CM",2,"National Assembly restored after elections."],
 [2024,"AM",2,"The Emir suspends parliament and parts of the constitution (May 2024)."]]},
 {id:"BHR",name:"Bahrain",col:4,row:3,p:[
 [1876,"CO",2,"Al Khalifa sheikhdom under British protection."],
-[1971,"AM",2,"Independence; the elected assembly is dissolved in 1975. Hosts the US Fifth Fleet."],
+[1971,"AM",2,"Independence; the elected assembly is dissolved in 1975. Hosts the US Navy's Middle East Force (the Fifth Fleet from 1995)."],
 [2002,"CM",2,"Kingdom with an elected lower house. The 2011 uprising is crushed with Saudi troops."]]},
 {id:"QAT",name:"Qatar",col:5,row:3,p:[
 [1876,"AM",0,"Al Thani sheikhdom under nominal Ottoman suzerainty, with an Ottoman garrison until 1915."],
@@ -436,6 +453,8 @@ const $ns='http://www.w3.org/2000/svg';function node(parent,t,attrs={},txt=''){l
 const ECON_IDS={TUR:'TUR',IRN:'IRN',AFG:'AFG',PAK:'PAK',IRQ:'IRQ',SYR:'SYR',LBN:'LBN',ISR:'ISR',PSE:'PSE',JOR:'JOR',EGY:'EGY',SAU:'SAU',KWT:'KWT',BHR:'BHR',QAT:'QAT',UAE:'ARE',OMN:'OMN',NYE:'YEM'};
 const ECON_IND={gdp:{id:'NY.GDP.MKTP.CD',label:'GDP, current US$',low:'#c6dafa',high:'#123f92'},growth:{id:'NY.GDP.MKTP.KD.ZG',label:'Real GDP growth, annual %',low:'#cbf0dd',high:'#086848'},unemployment:{id:'SL.UEM.TOTL.ZS',label:'Unemployment, % of labor force (modeled ILO estimate)',low:'#ffe1db',high:'#8f1429'}};
 let economicData={},economicState='not loaded';
+/* M17: latest calendar year with any World Bank observation (replaces hard-coded 2025 caps). */
+function wbLatestYear(){let m=0;for(const k in economicData)for(const iso in economicData[k])for(const y in economicData[k][iso])if(+y>m)m=+y;return m||2025}
 const metric=()=>document.getElementById('mapMetric').value;
 function econValue(country,y,key=metric()){const iso=ECON_IDS[country];const v=economicData[key]?.[iso]?.[y];return Number.isFinite(v)?v:null;}
 function observations(key,y){return Object.keys(ECON_IDS).map(id=>econValue(id,y,key)).filter(Number.isFinite);}
@@ -450,7 +469,7 @@ function econFill(id){return economicColor(metric(),econValue(id,year,metric()))
 function cfill(p,id){if(metric()!=='alignment')return econFill(id);return p[1]==='NA'?'url(#hatch)':COLORS[p[2]+2]};
 function fmtEconomic(key,value){if(value===null)return 'No observation';if(key==='gdp'){if(value>=1e12)return '$'+(value/1e12).toFixed(2)+' trillion';if(value>=1e9)return '$'+(value/1e9).toFixed(2)+' billion';return '$'+value.toLocaleString(undefined,{maximumFractionDigits:0});}return value.toFixed(2)+'%';}
 function updateEconUI(){const key=metric(),scale=document.getElementById('econScale'),status=document.getElementById('economicStatus'),selEcon=document.getElementById('selectedEconomic');
- if(typeof labMapMode!=='undefined'&&labMapMode){const vals=Object.keys(ECON_IDS).map(c=>labDeltaFor(c,year)).filter(v=>v!==null);const bound=vals.length?Math.max(...vals.map(Math.abs)):0;scale.style.display='block';document.getElementById('econGradient').style.background='linear-gradient(90deg,#2769cb,#d9e7ed,#b45318)';document.getElementById('econMin').textContent=bound?'−'+bound.toFixed(2)+' pp':'';document.getElementById('econMax').textContent=bound?'+'+bound.toFixed(2)+' pp':'';status.textContent=`Map color: change in ${labMetric()==='growth'?'GDP growth':'unemployment'}, ${year-labWindow()}→${year}. Scale is relative to this year's largest change (${vals.length} countries with data), so colors are not comparable across years.`;selEcon.textContent='';return;} /* Audit M4 */
+ if(typeof labMapMode!=='undefined'&&labMapMode){const vals=Object.keys(ECON_IDS).map(c=>labDeltaFor(c,year)).filter(v=>v!==null);const bound=vals.length?Math.max(...vals.map(Math.abs)):0;scale.style.display='block';document.getElementById('econGradient').style.background='linear-gradient(90deg,#7d4fb8,#d9e7ed,#b45318)';document.getElementById('econMin').textContent=bound?'−'+bound.toFixed(2)+' pp':'';document.getElementById('econMax').textContent=bound?'+'+bound.toFixed(2)+' pp':'';status.textContent=`Map color: change in ${labMetric()==='growth'?'GDP growth':'unemployment'}, ${year-labWindow()}→${year}. Scale is relative to this year's largest change (${vals.length} countries with data), so colors are not comparable across years.`;selEcon.textContent='';return;} /* Audit M4 */
  if(key==='alignment'){scale.style.display='none';status.textContent='Map color: original historical East/West classifications. Economic datasets remain separate.';selEcon.textContent='';return;}
  scale.style.display='block';let lim=limits(key,year),dataReady=!!economicData[key];let all=Object.keys(ECON_IDS).length;
  status.textContent=ECON_IND[key].label+' · '+year+' · '+(lim?lim.n:0)+' of '+all+' current-country records available (fixed scale)'+(!dataReady?' · '+economicState:'')+'.';
@@ -586,7 +605,8 @@ function labDeltaFor(id,y,key=labMetric(),window=labWindow()){
 }
 function labBacktest(id,key=labMetric()){
  const code=ECON_IDS[id],series=economicData[key]?.[code]||{},actual=[],persist=[],avg=[];
- for(let y=2005;y<=Math.min(year,2025);y++){
+ const end=Math.min(year,wbLatestYear());
+ for(let y=Math.max(1966,end-29);y<=end;y++){ /* M17: same 30-year window as the chart */
    const v=series[y],prev=series[y-1];
    if(!Number.isFinite(v)||!Number.isFinite(prev))continue;
    // The mean forecast requires five consecutive historical years; never use the target year.
@@ -601,7 +621,7 @@ function labText(v,digits=2){return v===null||!Number.isFinite(v)?'N/A':`${v>0?'
 function drawLabChart(){
  const svg=document.getElementById('labChart');svg.replaceChildren();
  const series=economicData[labMetric()]?.[ECON_IDS[labCountry()]]||{};
- const start=Math.max(1995,Math.min(year,2025)-29),end=Math.min(year,2025);
+ const end=Math.min(year,wbLatestYear()),start=Math.max(1960,end-29); /* M17: was floored at 1995, which blanked every pre-1995 year */
  const all=Object.entries(series).map(([y,v])=>({y:Number(y),v})).filter(p=>p.y>=start&&p.y<=end&&Number.isFinite(p.v)).sort((a,b)=>a.y-b.y);
  const back=labBacktest(labCountry());const preds=back.persist.filter(p=>p.y>=start&&p.y<=end);
  const values=all.map(p=>p.v).concat(preds.map(p=>p.value));if(!values.length){svg.innerHTML='<text x="30" y="115">No historical observations for this selection.</text>';return;}
@@ -622,7 +642,7 @@ function updateLab(){
  set('labObserved',v===null?'N/A':v.toFixed(2)+'%');set('labObservedFoot',v===null?'Exact-year observation unavailable':`${title(id)} · ${year} · World Bank`);
  set('labDelta',labText(delta));set('labDeltaFoot',delta===null?`${year} and ${year-window} values required`:`${year} (${v.toFixed(2)}%) minus ${year-window} (${p.toFixed(2)}%)`);
  set('labMae',bt.persistMae===null?'N/A':bt.persistMae.toFixed(2)+' pp');
- set('labMaeFoot',`${bt.actual.length} historical tests · trailing mean MAE ${bt.avgMae===null?'N/A':bt.avgMae.toFixed(2)+' pp'}`);
+ set('labMaeFoot',`${bt.actual.length} tests${bt.actual.length?' ('+bt.actual[0].y+'–'+bt.actual[bt.actual.length-1].y+')':''} · trailing 5-yr mean MAE ${bt.avgMae===null?'N/A':bt.avgMae.toFixed(2)+' pp'}`);
  const info=delta===null?`The selected years lack a complete comparable pair. No change signal is calculated.`:`${title(id)} changed ${labText(delta)} between ${year-window} and ${year}. ${key==='growth'?'This is a change in the GDP growth rate, not cumulative GDP growth.':'This is a change in the unemployment rate, not unemployment headcount.'}`;
  set('labMessage',info+' Historical association does not establish political causation.');
  const rows=Object.keys(ECON_IDS).map(cid=>({id:cid,v:econValue(cid,year,key),before:econValue(cid,year-window,key),d:labDeltaFor(cid,year,key,window)})).filter(r=>r.d!==null).sort((a,b)=>Math.abs(b.d)-Math.abs(a.d));
@@ -630,7 +650,7 @@ function updateLab(){
  drawLabChart();
  if(labMapMode)drawMap();
 }
-function labMapFill(id){let vals=Object.keys(ECON_IDS).map(c=>labDeltaFor(c,year)).filter(v=>v!==null);let v=labDeltaFor(id,year);if(v===null||!vals.length)return 'url(#hatch)';let bound=Math.max(...vals.map(Math.abs),.00001);return v>=0?mix('#d9e7ed','#b45318',Math.min(1,v/bound)):mix('#d9e7ed','#2769cb',Math.min(1,-v/bound));}
+function labMapFill(id){let vals=Object.keys(ECON_IDS).map(c=>labDeltaFor(c,year)).filter(v=>v!==null);let v=labDeltaFor(id,year);if(v===null||!vals.length)return 'url(#hatch)';let bound=Math.max(...vals.map(Math.abs),.00001);return v>=0?mix('#d9e7ed','#b45318',Math.min(1,v/bound)):mix('#d9e7ed','#7d4fb8',Math.min(1,-v/bound));}
 const oldCfill=cfill;
 cfill=function(p,id){return labMapMode?labMapFill(id):oldCfill(p,id)};
 const oldRender=render;
@@ -640,7 +660,7 @@ loadEconomics=async function(){await oldLoad();updateLab()};
 const choose=document.getElementById('labCountry');
 choose.innerHTML=Object.keys(ECON_IDS).map(id=>`<option value="${id}">${title(id)}</option>`).join('');choose.value='IRN';
 for(const id of ['labMetric','labCountry','labWindow'])document.getElementById(id).addEventListener('change',()=>{updateLab();if(labMapMode)drawMap()});
-document.getElementById('labMapToggle').onclick=()=>{labMapMode=!labMapMode;document.getElementById('labMapToggle').textContent=`Color map by change: ${labMapMode?'ON':'OFF'}`;drawMap();updateEconUI();updateLab()};
+document.getElementById('labMapToggle').onclick=()=>{labMapMode=!labMapMode;document.getElementById('labMapToggle').textContent=`Color map by change: ${labMapMode?'ON':'OFF'}`;drawMap();updateEconUI();updateLab();window.uxSyncLayer?.();if(labMapMode)window.uxShowAtlas?.()}; /* M17: show the map it just recolored */
 
 
 // Milestone 10: descriptive event-window exploration. Never infer a causal effect.
@@ -657,7 +677,7 @@ const STUDY_EVENTS=[
  {id:'KWT1990',subject:'KWT',year:1990,title:'Kuwait · 1990 Iraqi invasion',desc:'Military invasion and occupation. Missing wartime observations should not be inferred.'}
 ];
 const ev$=id=>document.getElementById(id);
-function studyVal(country,y,key){return y>2025?null:econValue(country,y,key)}
+function studyVal(country,y,key){return y>wbLatestYear()?null:econValue(country,y,key)} /* M17: cap follows the data, not a fixed 2025 */
 function studyFmt(v,key){if(v===null)return '—';if(key==='gdp')return '$'+(v/1e9).toFixed(1)+'B';return v.toFixed(2)+'%'}
 function studyChangeFmt(v,key){if(v===null)return 'N/A';if(key==='gdp')return (v>0?'+':'')+'$'+(v/1e9).toFixed(1)+'B';return (v>0?'+':'')+v.toFixed(2)+' pp'}
 function studyAverage(id,eventYear,key,offsets){const vals=offsets.map(t=>studyVal(id,eventYear+t,key)).filter(v=>v!==null);return vals.length>=2?vals.reduce((a,b)=>a+b,0)/vals.length:null}
@@ -730,11 +750,13 @@ function updateSpill(){
  sp$('spillMean').textContent=valid.length?spDiff(valid.reduce((sum,r)=>sum+r.delta,0)/valid.length,key):'N/A';
  sp$('spillStatus').textContent=`${ev.year} · ${economicState==='loaded'?'Data loaded':'Data '+economicState}`;
  sp$('spillRows').innerHTML=rows.map(r=>`<tr class="spill-row" tabindex="0" data-country="${r.id}"><td>${title(r.id)}${r.id===ev.subject?' (event country)':''}</td><td>${spFmt(r.prior,key)}</td><td>${spFmt(r.post,key)}</td><td style="color:${spColor(r.delta,key)}">${spDiff(r.delta,key)}</td><td>${r.available}/${r.total}${r.complete?' complete':''}</td></tr>`).join('');
- sp$('spillRows').querySelectorAll('[data-country]').forEach(tr=>{const fn=()=>{select(tr.dataset.country);document.getElementById('atlas').scrollIntoView({behavior:'smooth',block:'center'})}; /* Audit H6 */tr.addEventListener('click',fn);tr.addEventListener('keydown',e=>{if(e.key==='Enter')fn()});});
+ sp$('spillRows').querySelectorAll('[data-country]').forEach(tr=>{const fn=()=>{select(tr.dataset.country);window.uxShowAtlas?.();document.getElementById('atlas').scrollIntoView({behavior:'smooth',block:'center'})}; /* Audit H6 */tr.addEventListener('click',fn);tr.addEventListener('keydown',e=>{if(e.key==='Enter')fn()});});
  spChart(rows,key);
  sp$('spillInterpret').textContent=valid.length
  ?`${valid.length} of ${rows.length} countries have all ${2*n} annual observations. ${ev.title}: the average shown is an equal-country average of recorded changes, not a measure of influence or causality. ${rows.length-valid.length} countries are omitted from that mean because of data gaps.`
- :`No country in this comparison group has all required observations. The laboratory cannot calculate a regional average. Try a shorter window or another event.`;
+ :(ev.year+n>wbLatestYear()
+    ?`This window needs data through ${ev.year+n}, but the latest World Bank year available is ${wbLatestYear()}. Choose a shorter window (maximum ${Math.max(0,wbLatestYear()-ev.year)} year${wbLatestYear()-ev.year===1?'':'s'} after this event).`
+    :`No country in this comparison group has all required observations. The laboratory cannot calculate a regional average. Try a shorter window or another event.`);
 }
 for(const id of ['spillEvent','spillMetric','spillWindow'])sp$(id).addEventListener('change',updateSpill);
 const priorSpillLoad=loadEconomics;loadEconomics=async function(){await priorSpillLoad();updateSpill()};
@@ -756,7 +778,7 @@ function renderEconomicTable(){
  for(const r of rows){const tr=document.createElement('tr');tr.className=r.id===sel?'active':'';tr.tabIndex=0;tr.setAttribute('aria-label',`${r.name}, ${year}`);
  const name=document.createElement('td');name.textContent=r.name;tr.appendChild(name);
  for(const k of ['gdp','growth','unemployment']){const td=document.createElement('td');const v=r[k];td.textContent=v===null?'No data':fmtEconomic(k,v);td.title=`${r.name} · ${year} · ${ECON_IND[k].label}: ${td.textContent}`;const color=economicColor(k,v);if(color){td.className='value';td.style.backgroundColor=color;td.style.color=inkFor(color);}else td.className='missing';tr.appendChild(td);}
- const pick=()=>select(r.id);tr.addEventListener('click',pick);tr.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick()}});frag.appendChild(tr);
+ const pick=()=>{select(r.id);window.uxShowAtlas?.()}; /* M17: map lives on the Atlas tab */tr.addEventListener('click',pick);tr.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick()}});frag.appendChild(tr);
  }tbody.replaceChildren(frag);
 }
 document.getElementById('econTableSort').addEventListener('change',renderEconomicTable);
@@ -807,6 +829,7 @@ command.innerHTML=`
 <div class="ux-bar">
   <div class="ux-brand"><div><small>Levant workspace</small><strong>Modern intelligence dashboard</strong></div></div>
   <div class="ux-field"><label for="uxLayer">Map layer</label><select id="uxLayer"><option value="alignment">Political alignment</option><option value="gdp">GDP · economic size</option><option value="growth">GDP growth · %</option><option value="unemployment">Unemployment · %</option></select></div>
+  <div class="ux-year" id="uxYearBar" hidden><button type="button" id="uxPrev" aria-label="Previous year">←</button><input id="uxSlider" type="range" min="1876" max="2026" aria-label="Historical year"><button type="button" id="uxNext" aria-label="Next year">→</button><b id="uxYearVal"></b></div>
   <div class="ux-api"><span class="ux-apistatus" id="uxApiStatus">API: checking</span><button id="uxReload" class="ux-apibtn" type="button">↻ Reload</button><button id="uxDiagnostic" class="ux-apibtn" type="button">Diagnostics</button></div>
 <div class="ux-tabs" role="tablist" aria-label="LEVANT workspaces">
 <button type="button" class="ux-tab" role="tab" aria-selected="true" data-view="overview">Atlas</button>
@@ -827,6 +850,10 @@ main.classList.add('ux-main-workspace');
 
 const breaks=main.querySelector('.breakdowns');
 if(breaks){ const firstCard=right.querySelector(':scope > .panel.pad'); if(firstCard && firstCard.nextSibling){ right.insertBefore(breaks, firstCard.nextSibling); } else right.prepend(breaks); }
+/* M17: define the East/West scale where the shares are read, and keep the source/classification caveats visible in the sidebar. */
+const cap=breaks?.querySelector('.breakdown .caption'); if(cap){ const d=document.createElement('span'); d.className='ux-scale-def'; d.textContent='Scale: East = aligned with Russia / the USSR / China; West = aligned with Britain / France / the US; 0 = non-aligned, hostile to both camps, or split. Scores are coded judgments per period, not measurements.'; cap.appendChild(d); }
+const prov=[...main.querySelectorAll('.pad.tiny')].find(e=>e.textContent.trim().startsWith('Geography')); if(prov&&breaks){ const box=document.createElement('div'); box.className='panel pad ux-provenance'; box.appendChild(prov); prov.className=''; breaks.after(box); }
+const scaleNote=document.getElementById('econScaleNote'); if(scaleNote) scaleNote.title=scaleNote.textContent;
 
 const toolbar=main.querySelector('.toolbar');
 const headline=main.querySelector('#headline'); if(headline) headline.textContent='Select a year, choose a map layer, and click a country.';
@@ -835,7 +862,10 @@ quickActions.className='ux-data-controls';
 const econbox=main.querySelector('#economicLayers'); if(econbox && toolbar) toolbar.after(quickActions), quickActions.appendChild(econbox);
 
 const health=main.querySelector('.apihealth');
-if(health){const details=document.createElement('details'); details.className='ux-apidetails'; details.id='uxApiDetails'; details.innerHTML='<summary>API diagnostics, request log, and manual import</summary>'; document.body.appendChild(details); details.appendChild(health)}
+if(health){const details=document.createElement('details'); details.className='ux-apidetails'; details.id='uxApiDetails'; details.innerHTML='<summary>API diagnostics, request log, and manual import</summary>'; document.body.appendChild(details); details.appendChild(health);
+  /* M17: the per-indicator report and the manual file-import fallback were hidden in the toolbar; show them here. */
+  const report=document.getElementById('wbReport'); if(report) health.appendChild(report);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape' && details.open) details.open=false; });}
 
 let legend=main.querySelector('.legend');
 if(legend){ const note=main.querySelector('.ux-legend-note')||document.createElement('p'); note.className='ux-legend-note'; note.textContent=''; legend.after(note); }
@@ -851,13 +881,33 @@ for(const [key,id,label,info] of categories){
 
 const layer=document.getElementById('uxLayer'), metric=document.getElementById('mapMetric');
 layer.value=metric.value;
-layer.onchange=()=>{ metric.value=layer.value; metric.dispatchEvent(new Event('change',{bubbles:true})); };
+layer.onchange=()=>{ if(layer.value==='change') return; if(labMapMode){ labMapMode=false; const t=document.getElementById('labMapToggle'); if(t) t.textContent='Color map by change: OFF'; } metric.value=layer.value; metric.dispatchEvent(new Event('change',{bubbles:true})); uxSyncLayer(); };
 metric.onchange=()=>{ layer.value=metric.value; render(); };
+
+/* M17: the map layer menu reflects the Trends "color map by change" mode instead of showing a stale layer. */
+function uxSyncLayer(){
+  let opt=layer.querySelector('option[value=change]');
+  if(labMapMode){ if(!opt){ opt=document.createElement('option'); opt.value='change'; opt.textContent='Change (from Trends)'; layer.appendChild(opt); } layer.value='change'; }
+  else { if(opt) opt.remove(); layer.value=metric.value; }
+  const lg=document.getElementById('legend'); if(lg) lg.classList.toggle('ux-legend-off',labMapMode);
+}
+window.uxSyncLayer=uxSyncLayer;
+
+/* M17: year control available on every tab, synced with the Atlas slider. */
+const yBar=document.getElementById('uxYearBar'), ySlider=document.getElementById('uxSlider'), yVal=document.getElementById('uxYearVal');
+const syncYear=()=>{ ySlider.value=year; yVal.textContent=year; };
+ySlider.oninput=e=>{ stop(); setYear(+e.target.value); };
+document.getElementById('uxPrev').onclick=()=>document.getElementById('prev').click();
+document.getElementById('uxNext').onclick=()=>document.getElementById('next').click();
+const renderBeforeYearBar=render; render=function(){ renderBeforeYearBar(); syncYear(); };
+syncYear();
 
 function activate(key){
   document.querySelectorAll('.ux-tab').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.view===key)));
   document.querySelectorAll('.ux-tabpanel').forEach(p=>p.hidden=p.id!=='ux-'+key);
+  yBar.hidden = key==='overview'; /* Atlas already has the full year toolbar */
 }
+window.uxShowAtlas=()=>activate('overview');
 document.querySelectorAll('.ux-tab').forEach(b=>b.addEventListener('click',()=>activate(b.dataset.view)));
 
 document.getElementById('uxReload').onclick=()=>document.getElementById('refreshEcon')?.click();
