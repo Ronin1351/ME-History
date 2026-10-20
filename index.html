@@ -224,9 +224,13 @@ body{background:
  <div class="econ-table-foot">Each colored value cell uses the same fixed scale as its map mode. Gray hatch = no observation for that exact year. This table shows coded present-day countries only, not separate pre-unification South Yemen. <a href="https://data.worldbank.org/" target="_blank" rel="noopener">Source: World Bank</a>. Current-dollar GDP is not inflation-adjusted, so its change over time can reflect inflation and exchange rates.</div>
 </section>
 <script src="europe-data.js"></script>
+<script src="asia-data.js"></script>
+<script src="africa-data.js"></script>
+<script src="americas-data.js"></script>
 <script>/* M18: region switch. ?region=eu loads Europe from europe-data.js; anything else keeps the Middle East data below. */
-const REGION=(new URLSearchParams(location.search).get('region')==='eu'&&window.REGION_EU)?'eu':'me';const RD=REGION==='eu'?window.REGION_EU:null;
-const C=RD?RD.C:[
+const REGION=(()=>{const r=new URLSearchParams(location.search).get('region');return r==='eu'&&window.REGION_EU?'eu':r==='as'&&window.REGION_AS?'as':r==='af'&&window.REGION_AF?'af':r==='am'&&window.REGION_AM?'am':'me'})();
+const RD={eu:window.REGION_EU,as:window.REGION_AS,af:window.REGION_AF,am:window.REGION_AM}[REGION]||null;
+const ME_C=[
 {id:"TUR",name:"Turkey",col:2,row:0,label:y=>y<1923?"Ottoman":"Turkey",full:y=>y<1923?"Ottoman Empire":"Turkey",p:[
 [1876,"CM",1,"Sultan Abdul Hamid II grants the first Ottoman constitution and parliament. Britain props the empire up against Russia."],
 [1878,"AM",1,"Abdul Hamid II suspends parliament after the Russo-Turkish War and rules as an absolute monarch."],
@@ -288,7 +292,7 @@ const C=RD?RD.C:[
 [1999,"MR",1,"Musharraf's coup."],
 [2001,"MR",2,"Major US ally in the war on terror after 9/11."],
 [2008,"DR",1,"Elected civilian governments, with the army dominant behind the scenes."],
-[2015,"DR",0,"China–Pakistan Economic Corridor; China becomes the main arms and investment partner as US ties cool."],
+[2015,"DR",-1,"China–Pakistan Economic Corridor; China becomes the main arms and investment partner as US ties cool.",null,"CN"],
 [2025,"MR",0,"Military-dominated hybrid rule: Imran Khan jailed, Field Marshal Asim Munir's powers entrenched by the 27th Amendment. Balances China with renewed US ties after the May 2025 clash with India; open war with the Taliban from Feb 2026.","Hybrid regime"]]},
 {id:"IRQ",name:"Iraq",col:3,row:1,p:[
 [1876,"IP",0,"Ottoman provinces of Baghdad, Basra and Mosul."],
@@ -427,6 +431,8 @@ const C=RD?RD.C:[
 [1967,"MR",-2,"People's Democratic Republic of Yemen, the Arab world's only Marxist one-party state; Soviet naval access."],
 [1990,"NA",0,"Merged into unified Yemen (see Yemen)."]]}
 ];
+/* M19: Asia reuses the Middle East records and Russia from the Europe file, so each is edited in one place. */
+const C=!RD?ME_C:RD.useME?[...RD.C,...ME_C.filter(c=>RD.useME===true||RD.useME.includes(c.id)),...(RD.useEU||[]).map(id=>window.REGION_EU?.C.find(c=>c.id===id)).filter(Boolean)]:RD.C;
 const TYPES={
   IP:{n:"Imperial province (Ottoman)"},
   CO:{n:"Colonial / mandate / occupied"},
@@ -440,7 +446,13 @@ const TYPES={
   NA:{n:"Not a separate state"}
 };
 if(RD)TYPES.IP.n=RD.ipLabel; /* M18: Europe’s provinces are Russian, Habsburg, German and Ottoman */
-const LEAN={"-2":"Strong East","-1":"East-leaning","0":"Non-aligned / split","1":"West-leaning","2":"Strong West"};
+const LEAN={"-2":"Strong Russia / USSR","-1":"Russia / USSR-leaning","0":"Non-aligned / split","1":"West-leaning","2":"Strong West"};
+/* M19: third pole. A record with 'CN' at index 5 and a negative lean is aligned with China rather than Russia/USSR. */
+const CN_COLORS=['#a259e6','#cf9cf0'];
+const poleOf=r=>r&&r[5]==='CN'&&r[2]<0?'CN':'';
+const leanColor=r=>poleOf(r)?CN_COLORS[r[2]===-2?0:1]:COLORS[r[2]+2];
+const leanText=r=>poleOf(r)?(r[2]===-2?'Strong China':'China-leaning'):LEAN[r[2]];
+const factionOf=r=>r[2]<0?(poleOf(r)?'china':'east'):r[2]>0?'west':'neutral';
 const EVENTS=RD?RD.EVENTS:[
 [1876,"Ottoman constitution proclaimed"],[1878,"Congress of Berlin"],[1882,"Britain occupies Egypt"],[1906,"Persian Constitutional Revolution"],[1908,"Young Turk Revolution"],
 [1914,"Ottomans enter WWI with Germany"],[1916,"Sykes–Picot; Arab Revolt"],[1917,"Balfour Declaration; British take Baghdad and Jerusalem"],[1920,"San Remo: British and French mandates"],
@@ -475,7 +487,7 @@ const clamp01=v=>Math.max(0,Math.min(1,v));
 function economicT(key,v){if(!Number.isFinite(v))return null; if(key==='gdp'){const [lo,hi]=FIXED_SCALES.gdp;return clamp01((Math.log10(Math.max(lo,v))-Math.log10(lo))/(Math.log10(hi)-Math.log10(lo)));}const [lo,hi]=FIXED_SCALES[key];return clamp01((v-lo)/(hi-lo));}
 function economicColor(key,v){const t=economicT(key,v);if(t===null)return null;if(key==='growth')return t<.5?mix('#a52640','#e8e9e1',t*2):mix('#e8e9e1','#086848',(t-.5)*2);return mix(ECON_IND[key].low,ECON_IND[key].high,t);}
 function econFill(id){return economicColor(metric(),econValue(id,year,metric()))||'url(#hatch)';}
-function cfill(p,id){if(metric()!=='alignment')return econFill(id);return p[1]==='NA'?'url(#hatch)':COLORS[p[2]+2]};
+function cfill(p,id){if(metric()!=='alignment')return econFill(id);return p[1]==='NA'?'url(#hatch)':leanColor(p)};
 function fmtEconomic(key,value){if(value===null)return 'No observation';if(key==='gdp'){if(value>=1e12)return '$'+(value/1e12).toFixed(2)+' trillion';if(value>=1e9)return '$'+(value/1e9).toFixed(2)+' billion';return '$'+value.toLocaleString(undefined,{maximumFractionDigits:0});}return value.toFixed(2)+'%';}
 function updateEconUI(){const key=metric(),scale=document.getElementById('econScale'),status=document.getElementById('economicStatus'),selEcon=document.getElementById('selectedEconomic');
  if(typeof labMapMode!=='undefined'&&labMapMode){const vals=Object.keys(ECON_IDS).map(c=>labDeltaFor(c,year)).filter(v=>v!==null);const bound=vals.length?Math.max(...vals.map(Math.abs)):0;scale.style.display='block';document.getElementById('econGradient').style.background='linear-gradient(90deg,#7d4fb8,#d9e7ed,#b45318)';document.getElementById('econMin').textContent=bound?'−'+bound.toFixed(2)+' pp':'';document.getElementById('econMax').textContent=bound?'+'+bound.toFixed(2)+' pp':'';status.textContent=`Map color: change in ${labMetric()==='growth'?'GDP growth':'unemployment'}, ${year-labWindow()}→${year}. Scale is relative to this year's largest change (${vals.length} countries with data), so colors are not comparable across years.`;selEcon.textContent='';return;} /* Audit M4 */
@@ -488,7 +500,7 @@ function updateEconUI(){const key=metric(),scale=document.getElementById('econSc
 /* API fix: resilient World Bank loader.
    Order per indicator: fetch (30 s timeout, 2 retries with backoff) -> JSONP fallback -> last good values saved in this browser -> manual file import.
    Contracts kept: loadEconomics(), economicData[key][iso3][year], economicState, drawMap()/updateEconUI() at the end. */
-const WB_TIMEOUT=30000,WB_RETRIES=2,WB_CACHE='levant-wb-cache-v1'+(RD?'-eu':'') /* M18: per-region cache */;
+const WB_TIMEOUT=30000,WB_RETRIES=2,WB_CACHE='levant-wb-cache-v1'+(RD?'-'+REGION:'') /* M18: per-region cache */;
 let wbReport={};
 function wbURL(meta,page=1){const countries=[...new Set(Object.values(ECON_IDS))].join(';');return `https://api.worldbank.org/v2/country/${countries}/indicator/${meta.id}?format=json&date=1960:2026&per_page=20000&page=${page}`}
 function wbEsc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
@@ -548,7 +560,7 @@ const defs=node($('#atlas'),'defs');let hatch=node(defs,'pattern',{id:'hatch',wi
 // source geometry is genuine Natural Earth; only country labels are manually displaced for readability.
 for(const f of GEO){let id=iso[f.iso];if(id){node(countries,'path',{d:f.d,class:'area',id:'country_'+id,tabindex:0,role:'button','aria-label':title(id)}).addEventListener('click',()=>select(id));let p=$('#country_'+id);p.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select(id)}})}else{node(ctx,'path',{d:f.d,class:'context'})}}
 // Audit L1: wire the existing #hover tooltip.
-function hoverText(id){const p=lookup(by[id],year);let t=`<strong>${nameAt(id)}</strong> · ${year}<br>${TYPES[p[1]].n}${p[1]==='NA'?'':' · '+LEAN[p[2]]}`;if(metric()!=='alignment')t+=`<br>${ECON_IND[metric()].label}: ${fmtEconomic(metric(),econValue(id,year))}`;return t}
+function hoverText(id){const p=lookup(by[id],year);let t=`<strong>${nameAt(id)}</strong> · ${year}<br>${TYPES[p[1]].n}${p[1]==='NA'?'':' · '+leanText(p)}`;if(metric()!=='alignment')t+=`<br>${ECON_IND[metric()].label}: ${fmtEconomic(metric(),econValue(id,year))}`;return t}
 document.querySelectorAll('#countries .area').forEach(path=>{const id=path.id.replace('country_','');const tip=$('#hover'),frame=document.querySelector('.mapFrame');path.addEventListener('mousemove',e=>{const r=frame.getBoundingClientRect();tip.innerHTML=hoverText(id);tip.style.display='block';tip.style.left=Math.min(e.clientX-r.left+14,r.width-250)+'px';tip.style.top=(e.clientY-r.top+14)+'px'});path.addEventListener('mouseleave',()=>{tip.style.display='none'})});
 const labelPos=RD?RD.labelPos:{TUR:[338,139],EGY:[214,350],SAU:[490,408],IRN:[632,252],IRQ:[450,247],SYR:[344,194],JOR:[318,281],ISR:[252,290],LBN:[245,220],PSE:[189,258],KWT:[549,321],QAT:[580,374],BHR:[680,365],UAE:[653,440],OMN:[720,510],NYE:[500,556],AFG:[860,200],PAK:[915,348]};
 
@@ -576,36 +588,36 @@ function renderBreakdowns(){
  const ind=$('#independentOnly').checked;
  const records=C.map(c=>({c,p:lookup(c,year)})).filter(({p})=>p[1]!=='NA' && !(ind && (p[1]==='IP'||p[1]==='CO')));
  const total=records.length;
- let vals={east:0,neutral:0,west:0};let kinds=Object.fromEntries(TYPE_ORDER.map(t=>[t,0]));
- records.forEach(({p})=>{vals[p[2]<0?'east':p[2]>0?'west':'neutral']++;if(kinds[p[1]]!==undefined)kinds[p[1]]++});
+ let vals={east:0,china:0,neutral:0,west:0};let kinds=Object.fromEntries(TYPE_ORDER.map(t=>[t,0]));
+ records.forEach(({p})=>{vals[factionOf(p)]++;if(kinds[p[1]]!==undefined)kinds[p[1]]++});
  /* M17: country lists behind each row, era-correct full names, for the hover popup */
  const fullAt=c=>c.id==='SAU'?(year<1932?'Nejd':'Saudi Arabia'):(c.full?c.full(year):title(c.id));
  const namesBy=fn=>records.filter(fn).map(({c})=>fullAt(c)).sort((a,b)=>a.localeCompare(b)).join(', ');
  const tip=(label,list)=>` tabindex="0" data-tip-title="${wbEsc(label)}" data-tip="${wbEsc(list||'None this year')}"`;
- const factions=[['east','East-leaning (−2, −1)',COLORS[0]],['neutral','Neutral / mixed (0)',COLORS[2]],['west','West-leaning (+1, +2)',COLORS[4]]];
+ const factions=[['east','Russia / USSR (−2, −1)',COLORS[0]],['china','China (−2, −1)',CN_COLORS[0]],['neutral','Neutral / mixed (0)',COLORS[2]],['west','West (+1, +2)',COLORS[4]]];
  $('#alignYear').textContent=year+' · '+total+' territories';$('#govYear').textContent=year+' · '+total+' territories';
  $('#factionStack').innerHTML=factions.map(([key,name,color])=>`<span style="width:${percent(vals[key],total)}%;background:${color}" title="${name}: ${vals[key]} of ${total}"></span>`).join('');
- $('#factionRows').innerHTML=factions.map(([key,name,color])=>`<div class="pctrow"${tip(name+' · '+year,namesBy(({p})=>(p[2]<0?'east':p[2]>0?'west':'neutral')===key))}><span class="sw" style="background:${color}"></span><span class="pctlabel">${name}</span><strong>${percent(vals[key],total).toFixed(1)}%</strong><small>${vals[key]}/${total}</small></div>`).join('');
+ $('#factionRows').innerHTML=factions.map(([key,name,color])=>`<div class="pctrow"${tip(name+' · '+year,namesBy(({p})=>factionOf(p)===key))}><span class="sw" style="background:${color}"></span><span class="pctlabel">${name}</span><strong>${percent(vals[key],total).toFixed(1)}%</strong><small>${vals[key]}/${total}</small></div>`).join('');
  $('#govStack').style.display='none'; /* Audit M1: no per-type hues; bars below are neutral */
  $('#govRows').innerHTML=TYPE_ORDER.map(code=>`<div class="pctrow${kinds[code]?'':' zero'}"${tip(typeNames[code]+' · '+year,namesBy(({p})=>p[1]===code))}><span>${iconMarkup(code)}</span><span class="pctlabel">${typeNames[code]}<i class="minibar"><b style="width:${percent(kinds[code],total)}%"></b></i></span><strong>${percent(kinds[code],total).toFixed(1)}%</strong><small>${kinds[code]}/${total}</small></div>`).join('');
  $('#shareMethod').textContent='Denominator: '+total+' coded territories in '+year+(ind?' excluding imperial provinces and colonial/occupied territories.':' including imperial provinces and colonial/occupied territories.')+' Not-separate territories are excluded.'+(RD?RD.texts.shareNote:' South Yemen is separately counted only before 1990.')+' Percentages represent territory counts, not population, land area or geopolitical power.';
 }
 
 // Audit H3: records with no polygon (Bahrain, South Yemen) get a disc in their alignment color so their lean is visible.
-function leanDisc(id,x,y){if(metric()!=='alignment'||labMapMode)return;const p=lookup(by[id],year);if(p[1]==='NA')return;node(labs,'circle',{cx:x,cy:y,r:19,fill:COLORS[p[2]+2],stroke:'#071321','stroke-width':2,class:'leandisc'})}
-function placeLabel(id,pos,code){const [x,y]=pos, center=CENTERS[id];if(id==='BHR'||id==='MLT')leanDisc(id,x,y-20);if(center&&Math.hypot(x-center[0],y-center[1])>29)node(labs,'path',{d:`M${center[0]},${center[1]} L${x},${y-7}`,class:'guide'});node(labs,'text',{x,y,class:'label'},nameAt(id));if($('#icons').checked){govBadge(labs,x,y-20,code)}}
-function drawMap(){labs.innerHTML='';events.innerHTML='';for(const m of RD?.merge||[]){const h=$('#country_'+m.host),g=$('#country_'+m.guest);if(!h||!g)continue;const merged=lookup(by[m.guest],year)[1]==='NA';if(!h.dataset.dPart)h.dataset.dPart=h.getAttribute('d');h.setAttribute('d',merged?RD.dAll[m.host]:h.dataset.dPart);g.style.display=merged?'none':''} /* M18: one Germany outside 1945–1990 */for(const c of C){const p=lookup(c,year),r=$('#country_'+c.id);if(r){const par=p[1]==='NA'?(c.parentAt?c.parentAt(year):(c.id==='ISR'?'PSE':null)):null;const fp=par?lookup(by[par],year):p;r.setAttribute('fill',cfill(fp,c.id));r.classList.toggle('sel',sel===c.id);r.setAttribute('aria-label',metric()==='alignment'?`${title(c.id)}, ${year}, ${TYPES[p[1]].n}, ${LEAN[p[2]]}`:`${title(c.id)}, ${year}, ${ECON_IND[metric()].label}: ${fmtEconomic(metric(),econValue(c.id,year))}`)}}for(const [id,pos] of Object.entries(labelPos)){const p=lookup(by[id],year);if(p[1]==='NA'&&(id==='ISR'||(RD&&!(RD.naLabels||[]).includes(id))))continue; /* M18: Europe labels only the larger SSRs */ /* Audit H3: before 1948 the Israel shape shows Mandate Palestine, labeled once */placeLabel(id,pos,p[1]==='NA'?(by[id].parentAt?.(year)?lookup(by[by[id].parentAt(year)],year)[1]:'—'):p[1])}if(RD)for(const m of RD.markerStates||[]){const q=lookup(by[m.id],year);if(q[1]==='NA')continue;node(labs,'path',{d:`M${m.x},${m.y} L${m.lx},${m.ly+3}`,class:'guide'});node(labs,'circle',{cx:m.x,cy:m.y,r:4,class:'eventdot'});leanDisc(m.id,m.lx,m.ly-20);node(labs,'text',{x:m.lx,y:m.ly,class:'label'},nameAt(m.id));if($('#icons').checked)govBadge(labs,m.lx,m.ly-20,q[1])}
+function leanDisc(id,x,y){if(metric()!=='alignment'||labMapMode)return;const p=lookup(by[id],year);if(p[1]==='NA')return;node(labs,'circle',{cx:x,cy:y,r:19,fill:leanColor(p),stroke:'#071321','stroke-width':2,class:'leandisc'})}
+function placeLabel(id,pos,code){const [x,y]=pos, center=CENTERS[id];if(id==='BHR'||id==='MLT'||RD?.discs?.includes(id))leanDisc(id,x,y-20);if(center&&Math.hypot(x-center[0],y-center[1])>29)node(labs,'path',{d:`M${center[0]},${center[1]} L${x},${y-7}`,class:'guide'});node(labs,'text',{x,y,class:'label'},nameAt(id));if($('#icons').checked){govBadge(labs,x,y-20,code)}}
+function drawMap(){labs.innerHTML='';events.innerHTML='';for(const m of RD?.merge||[]){const h=$('#country_'+m.host),g=$('#country_'+m.guest);if(!h||!g)continue;const merged=lookup(by[m.guest],year)[1]==='NA';if(!h.dataset.dPart)h.dataset.dPart=h.getAttribute('d');h.setAttribute('d',merged?RD.dAll[m.host]:h.dataset.dPart);g.style.display=merged?'none':''} /* M18: one Germany outside 1945–1990 */for(const c of C){const p=lookup(c,year),r=$('#country_'+c.id);if(r){const par=p[1]==='NA'?(c.parentAt?c.parentAt(year):(c.id==='ISR'?'PSE':null)):null;const fp=par?lookup(by[par],year):p;r.setAttribute('fill',cfill(fp,c.id));r.classList.toggle('sel',sel===c.id);r.setAttribute('aria-label',metric()==='alignment'?`${title(c.id)}, ${year}, ${TYPES[p[1]].n}, ${leanText(p)}`:`${title(c.id)}, ${year}, ${ECON_IND[metric()].label}: ${fmtEconomic(metric(),econValue(c.id,year))}`)}}for(const [id,pos] of Object.entries(labelPos)){const p=lookup(by[id],year);if(p[1]==='NA'&&(id==='ISR'||(RD&&!(RD.naLabels||[]).includes(id))))continue; /* M18: Europe labels only the larger SSRs */ /* Audit H3: before 1948 the Israel shape shows Mandate Palestine, labeled once */placeLabel(id,pos,p[1]==='NA'?(by[id].parentAt?.(year)?lookup(by[by[id].parentAt(year)],year)[1]:'—'):p[1])}if(RD)for(const m of RD.markerStates||[]){const q=lookup(by[m.id],year);if(q[1]==='NA')continue;node(labs,'path',{d:`M${m.x},${m.y} L${m.lx},${m.ly+3}`,class:'guide'});node(labs,'circle',{cx:m.x,cy:m.y,r:4,class:'eventdot'});leanDisc(m.id,m.lx,m.ly-20);node(labs,'text',{x:m.lx,y:m.ly,class:'label'},nameAt(m.id));if($('#icons').checked)govBadge(labs,m.lx,m.ly-20,q[1])}
 if(!RD&&year<1990){let p=lookup(by.SYE,year);node(labs,'path',{d:'M530,582 L600,598',class:'guide'});leanDisc('SYE',625,583);node(labs,'text',{x:625,y:601,class:'label'},nameAt('SYE')); if($('#icons').checked){govBadge(labs,625,583,p[1])}}
 if($('#links').checked)MARKERS.filter(e=>e[2]===year).forEach(([a,b,y,label])=>{let A=CENTERS[a],B=CENTERS[b];if(!A||!B)return;node(events,'path',{d:`M${A[0]},${A[1]} Q${(A[0]+B[0])/2},${(A[1]+B[1])/2-45} ${B[0]},${B[1]}`,class:'eventline'});node(events,'circle',{cx:B[0],cy:B[1],r:5,class:'eventdot'})});}
-function render(){$('#yr').textContent=year;$('#slider').value=year;let event=null;for(const e of EVENTS){if(e[0]<=year)event=e;else break}$('#headline').textContent=event?(event[0]===year?event[1]:`Previous recorded milestone (${event[0]}): ${event[1]}`):'Historical overview';drawMap();let c=by[sel],p=lookup(c,year);$('#selectedName').textContent=nameAt(sel);$('#description').textContent=p[3];$('#government').textContent=TYPES[p[1]].n;$('#alignment').textContent=p[1]==='NA'?'Not applicable':LEAN[p[2]];$('#chips').innerHTML=`<span class="chip">${p[0]}–${(c.p[c.p.findIndex(x=>x[0]===p[0])+1]||[2027])[0]-1}</span><span class="chip">${TYPES[p[1]].n}</span><span class="chip" style="border-color:${COLORS[p[2]+2]}">${p[1]==='NA'?'N/A':LEAN[p[2]]}</span>`;
-$('#timeline').innerHTML='';c.p.forEach((rec,i)=>{let next=c.p[i+1]?.[0]||2027;let e=document.createElement('button');e.className='seg'+(p===rec?' current':'');e.style.flex=String(next-rec[0]);e.setAttribute('aria-label',`${rec[0]}–${next-1}: ${TYPES[rec[1]].n}, ${rec[1]==='NA'?'not applicable':LEAN[rec[2]]}`);e.style.background=rec[1]==='NA'?'#304151':COLORS[rec[2]+2];e.title=`${rec[0]}–${next-1}: ${TYPES[rec[1]].n}, ${LEAN[rec[2]]}`;e.onclick=()=>setYear(rec[0]);$('#timeline').appendChild(e)});
+function render(){$('#yr').textContent=year;$('#slider').value=year;let event=null;for(const e of EVENTS){if(e[0]<=year)event=e;else break}$('#headline').textContent=event?(event[0]===year?event[1]:`Previous recorded milestone (${event[0]}): ${event[1]}`):'Historical overview';drawMap();let c=by[sel],p=lookup(c,year);$('#selectedName').textContent=nameAt(sel);$('#description').textContent=p[3];$('#government').textContent=TYPES[p[1]].n;$('#alignment').textContent=p[1]==='NA'?'Not applicable':leanText(p);$('#chips').innerHTML=`<span class="chip">${p[0]}–${(c.p[c.p.findIndex(x=>x[0]===p[0])+1]||[2027])[0]-1}</span><span class="chip">${TYPES[p[1]].n}</span><span class="chip" style="border-color:${leanColor(p)}">${p[1]==='NA'?'N/A':leanText(p)}</span>`;
+$('#timeline').innerHTML='';c.p.forEach((rec,i)=>{let next=c.p[i+1]?.[0]||2027;let e=document.createElement('button');e.className='seg'+(p===rec?' current':'');e.style.flex=String(next-rec[0]);e.setAttribute('aria-label',`${rec[0]}–${next-1}: ${TYPES[rec[1]].n}, ${rec[1]==='NA'?'not applicable':leanText(rec)}`);e.style.background=rec[1]==='NA'?'#304151':leanColor(rec);e.title=`${rec[0]}–${next-1}: ${TYPES[rec[1]].n}, ${leanText(rec)}`;e.onclick=()=>setYear(rec[0]);$('#timeline').appendChild(e)});
 let m=MARKERS.filter(e=>e[2]===year);$('#relationship').innerHTML=m.length?m.map(([a,b,y,label])=>`<div class="eventitem"><strong>${title(a)} ↔ ${title(b)}</strong><div>${label}</div><small class="muted">${y} · coded historical milestone</small></div>`).join(''):'<div class="empty">No relationship milestones coded for this year. This does not imply absence of interactions.</div>';
 renderBreakdowns();updateEconUI();$('#regions').innerHTML='';C.forEach(c=>{let b=document.createElement('button');b.textContent=title(c.id);b.className=c.id===sel?'on':'';b.onclick=()=>select(c.id);$('#regions').appendChild(b)});}
 function setYear(v){year=Math.min(2026,Math.max(1876,v));render()}
 function stop(){clearInterval(timer);timer=null;$('#play').textContent='▶ Play';document.querySelector('.breakdowns').setAttribute('aria-live','polite')}function play(){if(year===2026)setYear(1876);$('#play').textContent='❚❚ Pause';document.querySelector('.breakdowns').setAttribute('aria-live','off');clearInterval(timer);timer=setInterval(()=>year>=2026?stop():setYear(year+1),Number($('#speed').value))}
 $('#speed').onchange=()=>{if(timer)play()}; /* Audit L6: speed applies immediately */
 $('#play').onclick=()=>timer?stop():play();$('#prev').onclick=()=>{stop();setYear(year-1)};$('#next').onclick=()=>{stop();setYear(year+1)};$('#slider').oninput=e=>{stop();setYear(+e.target.value)};document.querySelectorAll('[data-year]').forEach(b=>b.onclick=()=>{stop();setYear(+b.dataset.year)});$('#links').onchange=drawMap;$('#icons').onchange=drawMap;$('#independentOnly').onchange=renderBreakdowns;$('#mapMetric').onchange=render;$('#refreshEcon').onclick=()=>loadEconomics(); /* Audit H4: resolve at click time so all wrapped modules refresh */
-let keys=[[-2,'Strong East'],[-1,'East-leaning'],[0,'Neutral / mixed'],[1,'West-leaning'],[2,'Strong West']];$('#legend').innerHTML=keys.map(([v,t])=>`<span class="key"><i class="sw" style="background:${COLORS[v+2]}"></i>${t}</span>`).join('')+'<span class="key"><i class="sw" style="background:repeating-linear-gradient(45deg,#34495a,#34495a 3px,#71889a 3px,#71889a 5px)"></i>Not separate</span><span class="key"><span class="keyline"></span>Dated relationship</span>';
+let keys=[[-2,'Strong Russia/USSR'],[-1,'Russia/USSR-leaning'],[0,'Neutral / mixed'],[1,'West-leaning'],[2,'Strong West']];$('#legend').innerHTML=keys.map(([v,t])=>`<span class="key"><i class="sw" style="background:${COLORS[v+2]}"></i>${t}</span>`).join('')+`<span class="key"><i class="sw" style="background:${CN_COLORS[1]}"></i>China-leaning</span><span class="key"><i class="sw" style="background:${CN_COLORS[0]}"></i>Strong China</span>`+'<span class="key"><i class="sw" style="background:repeating-linear-gradient(45deg,#34495a,#34495a 3px,#71889a 3px,#71889a 5px)"></i>Not separate</span><span class="key"><span class="keyline"></span>Dated relationship</span>';
 $('#legend').insertAdjacentHTML('afterend','<div class="pad tiny"><strong>Government symbols:</strong><div class="govkeys">'+TYPE_ORDER.map(code=>'<span class="govkey">'+iconMarkup(code)+typeNames[code]+'</span>').join('')+'</div></div>');
 
 // Structural Change Laboratory. All methods explicitly exclude future observations.
@@ -842,7 +854,7 @@ command.className='ux-command';
 command.innerHTML=`
 <div class="ux-bar">
   <div class="ux-brand"><div><small>Levant workspace</small><strong>Modern intelligence dashboard</strong></div></div>
-  <div class="ux-field ux-region"><label for="uxRegion">Region</label><select id="uxRegion"><option value="me">Middle East</option><option value="eu">Europe</option></select></div>
+  <div class="ux-field ux-region"><label for="uxRegion">Region</label><select id="uxRegion"><option value="me">Middle East</option><option value="eu">Europe</option><option value="as">Asia</option><option value="af">Africa</option><option value="am">Americas</option></select></div>
   <div class="ux-field"><label for="uxLayer">Map layer</label><select id="uxLayer"><option value="alignment">Political alignment</option><option value="gdp">GDP · economic size</option><option value="growth">GDP growth · %</option><option value="unemployment">Unemployment · %</option></select></div>
   <div class="ux-year" id="uxYearBar" hidden><button type="button" id="uxPrev" aria-label="Previous year">←</button><input id="uxSlider" type="range" min="1876" max="2026" aria-label="Historical year"><button type="button" id="uxNext" aria-label="Next year">→</button><b id="uxYearVal"></b></div>
   <div class="ux-api"><span class="ux-apistatus" id="uxApiStatus">API: checking</span><button id="uxReload" class="ux-apibtn" type="button">↻ Reload</button><button id="uxDiagnostic" class="ux-apibtn" type="button">Diagnostics</button></div>
@@ -866,7 +878,7 @@ main.classList.add('ux-main-workspace');
 const breaks=main.querySelector('.breakdowns');
 if(breaks){ const firstCard=right.querySelector(':scope > .panel.pad'); if(firstCard && firstCard.nextSibling){ right.insertBefore(breaks, firstCard.nextSibling); } else right.prepend(breaks); }
 /* M17: define the East/West scale where the shares are read, and keep the source/classification caveats visible in the sidebar. */
-const cap=breaks?.querySelector('.breakdown .caption'); if(cap){ const d=document.createElement('span'); d.className='ux-scale-def'; d.textContent='Scale: East = aligned with Russia / the USSR / China; West = aligned with Britain / France / the US; 0 = non-aligned, hostile to both camps, or split. Scores are coded judgments per period, not measurements.'; cap.appendChild(d); }
+const cap=breaks?.querySelector('.breakdown .caption'); if(cap){ const d=document.createElement('span'); d.className='ux-scale-def'; d.textContent='Three poles: Russia / the USSR (red–orange), China (violet), and the West = Britain / France / the US (aqua–blue); 0 = non-aligned, hostile to all, or split. Scores are coded judgments per period, not measurements.'; cap.appendChild(d); }
 const prov=[...main.querySelectorAll('.pad.tiny')].find(e=>e.textContent.trim().startsWith('Geography')); if(prov&&RD) prov.textContent=RD.texts.provenance; if(prov&&breaks){ const box=document.createElement('div'); box.className='panel pad ux-provenance'; box.appendChild(prov); prov.className=''; breaks.after(box); }
 const scaleNote=document.getElementById('econScaleNote'); if(scaleNote) scaleNote.title=scaleNote.textContent;
 
@@ -901,9 +913,9 @@ metric.onchange=()=>{ layer.value=metric.value; render(); };
 
 /* M18: region switch reloads the page with ?region=eu (Europe) or without it (Middle East), keeping the year. */
 const regionSel=document.getElementById('uxRegion'); regionSel.value=REGION;
-regionSel.onchange=()=>{ const q=new URLSearchParams(location.search); if(regionSel.value==='eu') q.set('region','eu'); else q.delete('region'); q.set('year',year); location.search=q.toString(); };
+regionSel.onchange=()=>{ const q=new URLSearchParams(location.search); if(regionSel.value!=='me') q.set('region',regionSel.value); else q.delete('region'); q.set('year',year); location.search=q.toString(); };
 if(RD){
-  document.body.classList.add('region-eu'); document.title='LEVANT · Europe · History, governments & alignment';
+  document.body.classList.add('region-eu'); document.title='LEVANT · '+({eu:'Europe',as:'Asia',af:'Africa',am:'Americas'}[REGION])+' · History, governments & alignment';
   const k=header.querySelector('.kicker'); if(k) k.textContent=RD.texts.kicker;
   const m=header.querySelector('.muted'); if(m) m.textContent=RD.texts.muted;
   const rn=document.querySelector('#regions + .tiny'); if(rn) rn.textContent=RD.texts.regionsNote;
