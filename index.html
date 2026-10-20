@@ -143,6 +143,9 @@ body{background:
 .ux-data-controls #econScaleNote{margin-top:0}
 .ux-data-controls #econScale[style*="none"]{display:none!important} /* hide hatch key in alignment mode */
 .ux-apidetails .apihelp{display:block;font-size:11px;color:#a9bdcf}
+.pctrow[data-tip]{cursor:help}.pctrow[data-tip]:hover,.pctrow[data-tip]:focus-visible{background:#15293d;outline:none;border-radius:6px}
+.ux-rowtip{position:fixed;z-index:300;max-width:min(340px,calc(100vw - 16px));padding:9px 12px;background:#0c1b2b;border:1px solid #47718d;border-radius:10px;box-shadow:0 14px 40px #000a;font-size:12px;line-height:1.5;color:#e3eef7;pointer-events:none}
+.ux-rowtip strong{display:block;font-size:11px;letter-spacing:.04em;color:#eab968;margin-bottom:3px}.ux-rowtip[hidden]{display:none}
 .ux-apidetails[open]{box-shadow:0 0 0 100vmax rgba(2,8,15,.62),0 24px 100px #000c}
 .ux-year{display:flex;align-items:center;gap:6px}.ux-year[hidden]{display:none}.ux-year button{padding:6px 10px;border-radius:9px}.ux-year input{width:170px;margin:0}.ux-year b{font-size:18px;color:#f5cd84;min-width:46px;font-variant-numeric:tabular-nums}
 @media(max-width:760px){.toolbar>.actions:first-child{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.toolbar>.actions:first-child #headline{order:9;flex-basis:100%}.ux-year{flex-basis:100%}.ux-year input{flex:1;width:auto}}
@@ -569,12 +572,16 @@ function renderBreakdowns(){
  const total=records.length;
  let vals={east:0,neutral:0,west:0};let kinds=Object.fromEntries(TYPE_ORDER.map(t=>[t,0]));
  records.forEach(({p})=>{vals[p[2]<0?'east':p[2]>0?'west':'neutral']++;if(kinds[p[1]]!==undefined)kinds[p[1]]++});
+ /* M17: country lists behind each row, era-correct full names, for the hover popup */
+ const fullAt=c=>c.id==='SAU'?(year<1932?'Nejd':'Saudi Arabia'):(c.full?c.full(year):title(c.id));
+ const namesBy=fn=>records.filter(fn).map(({c})=>fullAt(c)).sort((a,b)=>a.localeCompare(b)).join(', ');
+ const tip=(label,list)=>` tabindex="0" data-tip-title="${wbEsc(label)}" data-tip="${wbEsc(list||'None this year')}"`;
  const factions=[['east','East-leaning (−2, −1)','#d84f63'],['neutral','Neutral / mixed (0)','#7a899a'],['west','West-leaning (+1, +2)','#326bcf']];
  $('#alignYear').textContent=year+' · '+total+' territories';$('#govYear').textContent=year+' · '+total+' territories';
  $('#factionStack').innerHTML=factions.map(([key,name,color])=>`<span style="width:${percent(vals[key],total)}%;background:${color}" title="${name}: ${vals[key]} of ${total}"></span>`).join('');
- $('#factionRows').innerHTML=factions.map(([key,name,color])=>`<div class="pctrow"><span class="sw" style="background:${color}"></span><span class="pctlabel">${name}</span><strong>${percent(vals[key],total).toFixed(1)}%</strong><small>${vals[key]}/${total}</small></div>`).join('');
+ $('#factionRows').innerHTML=factions.map(([key,name,color])=>`<div class="pctrow"${tip(name+' · '+year,namesBy(({p})=>(p[2]<0?'east':p[2]>0?'west':'neutral')===key))}><span class="sw" style="background:${color}"></span><span class="pctlabel">${name}</span><strong>${percent(vals[key],total).toFixed(1)}%</strong><small>${vals[key]}/${total}</small></div>`).join('');
  $('#govStack').style.display='none'; /* Audit M1: no per-type hues; bars below are neutral */
- $('#govRows').innerHTML=TYPE_ORDER.map(code=>`<div class="pctrow${kinds[code]?'':' zero'}"><span>${iconMarkup(code)}</span><span class="pctlabel">${typeNames[code]}<i class="minibar"><b style="width:${percent(kinds[code],total)}%"></b></i></span><strong>${percent(kinds[code],total).toFixed(1)}%</strong><small>${kinds[code]}/${total}</small></div>`).join('');
+ $('#govRows').innerHTML=TYPE_ORDER.map(code=>`<div class="pctrow${kinds[code]?'':' zero'}"${tip(typeNames[code]+' · '+year,namesBy(({p})=>p[1]===code))}><span>${iconMarkup(code)}</span><span class="pctlabel">${typeNames[code]}<i class="minibar"><b style="width:${percent(kinds[code],total)}%"></b></i></span><strong>${percent(kinds[code],total).toFixed(1)}%</strong><small>${kinds[code]}/${total}</small></div>`).join('');
  $('#shareMethod').textContent='Denominator: '+total+' coded territories in '+year+(ind?' excluding imperial provinces and colonial/occupied territories.':' including imperial provinces and colonial/occupied territories.')+' Not-separate territories are excluded. South Yemen is separately counted only before 1990. Percentages represent territory counts, not population, land area or geopolitical power.';
 }
 
@@ -930,6 +937,25 @@ showMore.onclick=()=>{
   extraPanels.forEach(e=>e.classList.toggle('ux-open',open));
   showMore.textContent=open?'Hide additional details':'More details';
 };
+/* M17: sidebar share rows — hover (or focus / tap) pops up the countries counted in that row. */
+const rowTip=document.createElement('div'); rowTip.className='ux-rowtip'; rowTip.setAttribute('role','tooltip'); rowTip.hidden=true; document.body.appendChild(rowTip);
+const showRowTip=row=>{
+  rowTip.innerHTML=''; const h=document.createElement('strong'); h.textContent=row.dataset.tipTitle; const t=document.createElement('div'); t.textContent=row.dataset.tip;
+  rowTip.append(h,t); rowTip.hidden=false;
+  const r=row.getBoundingClientRect(), w=rowTip.offsetWidth, ht=rowTip.offsetHeight;
+  let left=Math.min(Math.max(8,r.left), innerWidth-w-8), top=r.bottom+6; if(top+ht>innerHeight-8) top=Math.max(8,r.top-ht-6);
+  rowTip.style.left=left+'px'; rowTip.style.top=top+'px';
+};
+const hideRowTip=()=>{ rowTip.hidden=true; };
+document.addEventListener('mouseover',e=>{ const row=e.target.closest?.('.pctrow[data-tip]'); if(row) showRowTip(row); });
+document.addEventListener('mouseout',e=>{ const row=e.target.closest?.('.pctrow[data-tip]'); if(row && !row.contains(e.relatedTarget)) hideRowTip(); });
+document.addEventListener('focusin',e=>{ const row=e.target.closest?.('.pctrow[data-tip]'); if(row) showRowTip(row); else hideRowTip(); });
+document.addEventListener('focusout',e=>{ if(e.target.closest?.('.pctrow[data-tip]')) hideRowTip(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') hideRowTip(); });
+right.addEventListener('scroll',hideRowTip,{passive:true}); window.addEventListener('scroll',hideRowTip,{passive:true});
+const renderBeforeTip=render; render=function(){ hideRowTip(); renderBeforeTip(); };
+document.getElementById('independentOnly')?.addEventListener('change',hideRowTip); /* rows are rebuilt; avoid a stale list */
+
 activate('overview');
 })();
 </script></body></html>
