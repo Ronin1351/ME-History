@@ -7,8 +7,8 @@ describe('regional data inventory', () => {
     expect(regions.af.C.reduce((sum, country) => sum + country.p.length, 0)).toBe(356)
     expect(regions.am.C.length).toBe(35)
     expect(regions.am.C.reduce((sum, country) => sum + country.p.length, 0)).toBe(195)
-    expect(regions.as.C.length).toBe(33)
-    expect(regions.as.C.reduce((sum, country) => sum + country.p.length, 0)).toBe(245)
+    expect(regions.as.C.length).toBe(52)
+    expect(regions.as.C.reduce((sum, country) => sum + country.p.length, 0)).toBe(425)
     expect(regions.eu.C.length).toBe(41)
     expect(regions.eu.C.reduce((sum, country) => sum + country.p.length, 0)).toBe(321)
   })
@@ -27,5 +27,19 @@ describe('regional data inventory', () => {
     expect(regions.me.EVENTS).toHaveLength(44)
     expect(regions.me.MARKERS).toHaveLength(10)
     expect(regions.me.GEO).toHaveLength(33)
+  })
+
+  it('keeps North American records, European narratives, and Middle East coverage in Asia', () => {
+    for (const id of ['USA', 'CAN']) {
+      const country = regions.am.C.find((item) => item.id === id)
+      expect(country?.p.length).toBeGreaterThan(0)
+      expect(regions.am.LABELS[id]).toBeTruthy()
+    }
+    expect(regions.eu.C.every((country) => country.p.length > 0)).toBe(true)
+    for (const id of ['IRN', 'IRQ', 'SAU', 'ISR', 'TUR', 'EGY']) {
+      expect(regions.as.C.some((country) => country.id === id)).toBe(true)
+    }
+    const interactiveIsos = regions.as.GEO.filter((feature) => feature.iso !== 'CTX').map((feature) => feature.iso)
+    expect(new Set(interactiveIsos).size).toBe(interactiveIsos.length)
   })
 })
