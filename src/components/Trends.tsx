@@ -1,0 +1,5 @@
+import type { RegionData } from '../lib/types'
+import { lookup, eventWindowDelta } from '../lib/types'
+import type { EconomicData } from '../lib/economics'
+interface Props { region: RegionData; year: number; economic: EconomicData }
+export function Trends({ region, year, economic }: Props) { const id = region.defaultSel; const iso = region.ECON_IDS?.[id] ?? ''; const series = (key: string) => (y: number) => economic[key]?.[iso]?.[y] ?? null; const delta = eventWindowDelta(series('growth'), year, [-5], [-1]); return <section className="panel pad"><div className="kicker">Structural change laboratory</div><h2>Trends</h2><p className="desc">Exact-year changes and persistence checks use only observations available before the selected year.</p><div className="stat"><div><small>Selected record</small><b>{lookup(region.C.find((country) => country.id === id)!, year)[0]}</b></div><div><small>5-year growth change</small><b>{delta.delta === null ? 'N/A' : `${delta.delta.toFixed(2)} pp`}</b></div></div><p className="tiny">No forecast or causal inference is implied by these descriptive signals.</p></section> }

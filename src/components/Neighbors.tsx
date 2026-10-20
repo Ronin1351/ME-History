@@ -1,0 +1,5 @@
+import type { RegionData } from '../lib/types'
+import { completeRegionalWindow } from '../lib/types'
+import type { EconomicData } from '../lib/economics'
+interface Props { region: RegionData; economic: EconomicData }
+export function Neighbors({ region, economic }: Props) { const event = region.EVENTS.find(([year]) => year >= 2011) ?? region.EVENTS[0]; const group = region.C.slice(0, Math.min(5, region.C.length)); const rows = group.map((country) => completeRegionalWindow((year) => economic.growth?.[region.ECON_IDS?.[country.id] ?? '']?.[year] ?? null, event[0], 3)); const complete = rows.filter((row) => row.complete).length; return <section className="panel pad"><div className="kicker">Regional comparison</div><h2>Neighbors</h2><p className="desc">Curated nearby or involved countries around “{event[1]}”. All six annual observations are required per country.</p><div className="stat"><div><small>Countries in group</small><b>{group.length}</b></div><div><small>Complete windows</small><b>{complete}/{group.length}</b></div></div><p className="tiny">This is descriptive context, not a spillover effect estimate.</p></section> }

@@ -1,0 +1,5 @@
+export type EconomicData = Record<string, Record<string, Record<number, number>>>
+export type IndicatorData = Record<string, Record<number, number>>
+export const indicators = { gdp: { id: 'NY.GDP.MKTP.CD', label: 'GDP, current US$' }, growth: { id: 'NY.GDP.MKTP.KD.ZG', label: 'Real GDP growth, annual %' }, unemployment: { id: 'SL.UEM.TOTL.ZS', label: 'Unemployment, % of labor force' } }
+export function parseWorldBank(json: unknown): { pages: number; rows: unknown[] } { if (!Array.isArray(json) || !Array.isArray(json[1])) throw new Error('unexpected response shape'); return { pages: Number((json[0] as { pages?: number })?.pages) || 1, rows: json[1] } }
+export function ingestRows(rows: unknown[], target: IndicatorData) { let count = 0; for (const item of rows) { const row = item as { countryiso3code?: string; date?: string; value?: unknown }; const year = Number(row.date); if (!row.countryiso3code || !Number.isFinite(year) || typeof row.value !== 'number' || !Number.isFinite(row.value)) continue; (target[row.countryiso3code] ??= {})[year] = row.value; count++ } return count }
