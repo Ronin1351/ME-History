@@ -1,6 +1,7 @@
 import type { RegionData } from '../lib/types'
 import { alignmentColor, alignmentText, lookup } from '../lib/types'
 import type { EconomicData } from '../lib/economics'
+import { ZoomableMap } from './ZoomableMap'
 
 interface Props { region: RegionData; year: number; selected: string; metric: string; economic: EconomicData; onSelect: (id: string) => void; onYear: (year: number) => void; links: boolean; icons: boolean; onLinks: (value: boolean) => void; onIcons: (value: boolean) => void }
 
@@ -25,6 +26,7 @@ export function Atlas({ region, year, selected, metric, economic, onSelect, onYe
       <input type="range" min="1876" max="2026" value={year} onChange={(event) => onYear(Number(event.target.value))} aria-label="Historical year" />
       <div className="actions">{[1914, 1948, 1956, 1979, 1991, 2011, 2025].map((preset) => <button key={preset} onClick={() => onYear(preset)}>{preset}</button>)}<label><input type="checkbox" checked={links} onChange={(event) => onLinks(event.target.checked)} /> Historical relationship events</label><label><input type="checkbox" checked={icons} onChange={(event) => onIcons(event.target.checked)} /> Government icons</label></div>
     </div>
+    <ZoomableMap region={region} year={year} selected={selected} onSelect={onSelect} />
     <div className="mapFrame"><svg id="atlas" viewBox="0 0 1120 690" role="group" aria-label="Historical country atlas">
       <defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#253443" /><rect width="2" height="8" fill="#7b90a0" /></pattern></defs>
       <g>{region.GEO.map((feature) => { const id = countries.has(feature.iso) ? feature.iso : '' ; return <path key={`${feature.iso}-${feature.d}`} d={feature.d} className={id ? `area ${id === selected ? 'sel' : ''}` : 'context'} fill={id ? fill(id) : undefined} tabIndex={id ? 0 : undefined} role={id ? 'button' : undefined} aria-label={id ? `${region.LABELS[id] ?? id}, ${year}` : undefined} onClick={id ? () => onSelect(id) : undefined} onKeyDown={id ? (event) => { if (event.key === 'Enter' || event.key === ' ') onSelect(id) } : undefined} /> })}</g>

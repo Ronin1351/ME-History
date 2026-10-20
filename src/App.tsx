@@ -5,10 +5,14 @@ import { CountryData } from './components/CountryData'
 import { EventStudy } from './components/EventStudy'
 import { Neighbors } from './components/Neighbors'
 import { Trends } from './components/Trends'
+import { Ledger } from './components/Ledger'
+import { ChartPanel } from './components/ChartPanel'
+import * as Tabs from '@radix-ui/react-tabs'
+import { motion } from 'motion/react'
 import { ingestRows, indicators, type EconomicData, type IndicatorData } from './lib/economics'
 import { regionNames, regions } from './lib/regions'
 
-type View = 'overview' | 'economic' | 'signals' | 'events' | 'spillover' | 'diagnostics'
+type View = 'overview' | 'economic' | 'ledger' | 'signals' | 'events' | 'spillover' | 'diagnostics'
 const minYear = 1876
 const maxYear = 2026
 
@@ -51,15 +55,19 @@ export default function App() {
 
   function select(id: string) { if (countries[id]) setSelected(id) }
   function changeRegion(next: string) { setRegionKey(next); history.replaceState(null, '', `?region=${next}&year=${year}`) }
-  const tabs: Array<[View, string]> = [['overview', 'Atlas'], ['economic', 'Country data'], ['signals', 'Trends'], ['events', 'Event study'], ['spillover', 'Neighbors'], ['diagnostics', 'API diagnostics']]
+  const tabs: Array<[View, string]> = [['overview', 'Atlas'], ['economic', 'Country data'], ['ledger', 'Ledger'], ['signals', 'Trends'], ['events', 'Event study'], ['spillover', 'Neighbors'], ['diagnostics', 'API diagnostics']]
 
   return <main id="app"><header><div><div className="kicker">LEVANT / Middle East Futures Lab / Geographic reconstruction</div><h1>History, governments & alignment.</h1><div className="muted">Actual Natural Earth country outlines. Consistent political-alignment colors, government symbols, and dated regional links.</div></div><span className="badge">Embedded boundaries · economic layers need internet</span></header>
-    <section className="command panel"><label>Region<select value={regionKey} onChange={(event) => changeRegion(event.target.value)}>{Object.entries(regionNames).map(([key, name]) => <option key={key} value={key}>{name}</option>)}</select></label><label>Map layer<select value={metric} onChange={(event) => setMetric(event.target.value)}><option value="alignment">Political alignment</option><option value="gdp">GDP · economic size</option><option value="growth">GDP growth · %</option><option value="unemployment">Unemployment · %</option></select></label><div className="tabs" role="tablist">{tabs.map(([key, label]) => <button key={key} className={view === key ? 'active' : ''} onClick={() => setView(key)}>{label}</button>)}</div></section>
+    <section className="command panel"><label>Region<select value={regionKey} onChange={(event) => changeRegion(event.target.value)}>{Object.entries(regionNames).map(([key, name]) => <option key={key} value={key}>{name}</option>)}</select></label><label>Map layer<select value={metric} onChange={(event) => setMetric(event.target.value)}><option value="alignment">Political alignment</option><option value="gdp">GDP · economic size</option><option value="growth">GDP growth · %</option><option value="unemployment">Unemployment · %</option></select></label><Tabs.Root value={view} onValueChange={(value) => setView(value as View)} className="tabs" orientation="horizontal"><Tabs.List aria-label="Application views">{tabs.map(([key, label]) => <Tabs.Trigger key={key} value={key} className={view === key ? 'active' : ''}>{label}</Tabs.Trigger>)}</Tabs.List></Tabs.Root></section>
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .22 }}>
     {view === 'overview' && <div className="deck"><Atlas region={region} year={year} selected={selected} metric={metric} economic={economic} onSelect={select} onYear={(next) => setYear(Math.min(maxYear, Math.max(minYear, next)))} links={links} icons={icons} onLinks={setLinks} onIcons={setIcons} /><aside className="right"><section className="panel pad"><div className="kicker">Territory inspection</div><h2>{region.LABELS[selected] ?? selected}</h2><p className="desc">{String(countries[selected]?.p?.find((record) => record[0] <= year)?.[3] ?? '')}</p><div className="stat"><div><small>Political system</small><b>{String((countries[selected]?.p?.find((record) => record[0] <= year)?.[1] as string) ?? '')}</b></div><div><small>Year</small><b>{year}</b></div></div></section><section className="panel pad"><h2>Recorded relationship events</h2>{region.MARKERS.filter((event) => event[2] === year).map((event) => <p className="eventitem" key={event.join('-')}>{event[3]}</p>)}{!region.MARKERS.some((event) => event[2] === year) && <p className="empty">No relationship milestones coded for this year. This does not imply absence of interactions.</p>}</section></aside></div>}
     {view === 'economic' && <CountryData region={region} year={year} selected={selected} economic={economic} onSelect={select} />}
+    {view === 'ledger' && <Ledger region={region} year={year} selected={selected} onSelect={select} />}
     {view === 'signals' && <Trends region={region} year={year} economic={economic} />}
+    {view === 'signals' && <ChartPanel region={region} economic={economic} selected={selected} metric="growth" title="GDP growth observations" />}
     {view === 'events' && <EventStudy region={region} economic={economic} />}
     {view === 'spillover' && <Neighbors region={region} economic={economic} />}
     {view === 'diagnostics' && <ApiDiagnostics state={apiState} onReload={() => void loadEconomics()} />}
+    </motion.div>
   </main>
 }

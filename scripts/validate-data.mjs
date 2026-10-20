@@ -12,7 +12,7 @@ const files = [
 function load(path, name, converted = false) {
   let source = fs.readFileSync(path, 'utf8')
   if (converted) {
-    source = source.replace(`export const ${name} =`, `window.${name} =`)
+    source = source.replace(new RegExp(`export const ${name}(?::\\s*any)?\\s*=`), `window.${name} =`)
     source = source.replaceAll(`${name}.`, `window.${name}.`)
   }
   const context = { window: {} }
