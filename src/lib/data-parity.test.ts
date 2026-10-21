@@ -3,12 +3,12 @@ import { regions } from './regions'
 
 describe('regional data inventory', () => {
   it('retains every country-year record from the four converted regional datasets', () => {
-    expect(regions.af.C.length).toBe(54)
-    expect(regions.af.C.reduce((sum, country) => sum + country.p.length, 0)).toBe(356)
+    expect(regions.af.C.length).toBe(55) // 54 + Egypt shared from the Middle East
+    expect(regions.af.C.reduce((sum, country) => sum + country.p.length, 0)).toBe(356 + regions.me.C.find((c) => c.id === 'EGY')!.p.length)
     expect(regions.am.C.length).toBe(35)
     expect(regions.am.C.reduce((sum, country) => sum + country.p.length, 0)).toBe(195)
-    expect(regions.as.C.length).toBe(52)
-    expect(regions.as.C.reduce((sum, country) => sum + country.p.length, 0)).toBe(425)
+    expect(regions.as.C.length).toBe(53) // 33 + 19 Middle East + Russia shared from Europe
+    expect(regions.as.C.reduce((sum, country) => sum + country.p.length, 0)).toBe(425 + regions.eu.C.find((c) => c.id === 'RUS')!.p.length)
     expect(regions.eu.C.length).toBe(41)
     expect(regions.eu.C.reduce((sum, country) => sum + country.p.length, 0)).toBe(321)
   })
